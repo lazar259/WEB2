@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import './UserLogin.css';
 import authService from '../../services/authService';
 import { LoginRequest } from '../../services/types';
+import { getUserTypeFromToken } from '../../utils/jwt';
 
 interface LoginFormData {
   username: string;
@@ -13,11 +15,8 @@ interface LoginFormErrors {
   password?: string;
 }
 
-interface UserLoginProps {
-  onSwitchToRegister: () => void;
-}
-
-const UserLogin: React.FC<UserLoginProps> = ({ onSwitchToRegister }) => {
+const UserLogin: React.FC = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<LoginFormData>({
     username: '',
     password: '',
@@ -72,16 +71,30 @@ const UserLogin: React.FC<UserLoginProps> = ({ onSwitchToRegister }) => {
         };
 
         const response = await authService.login(loginData);
-
+        console.log(response);
         if (response.success) {
-          // Save token and redirect or update app state
+          // Save token and redirect based on user type
+          console.log("success")
           if (response.token) {
             authService.saveAuthToken(response.token);
+            
+            // Get user type from token and redirect accordingly
+            const userType = getUserTypeFromToken(response.token);
+            console.log(userType);
+            if (userType === 'admin') {
+              navigate('/admin/dashboard');
+            } else if (userType === 'student') {
+              console.log("here");
+              navigate('/student/dashboard');
+            } else {
+              // Fallback to main page if user type is unknown
+              navigate('/');
+            }
           }
           console.log('Login successful:', response);
-          // Handle successful login (e.g., redirect to dashboard)
         } else {
           // Handle login error - response is ApiError type here
+          console.log("error?")
           if ('errors' in response && response.errors) {
             setErrors(response.errors);
           } else {
@@ -99,6 +112,9 @@ const UserLogin: React.FC<UserLoginProps> = ({ onSwitchToRegister }) => {
   return (
     <div className="auth-container login-container">
       <div className="auth-card">
+        <Link to="/" className="back-button">
+          ← Back to Home
+        </Link>
         <div className="welcome-section">
           <h1 className="welcome-title login">Welcome Back to QuizHub</h1>
           <p className="welcome-subtitle">Continue your learning journey!</p>
@@ -142,13 +158,9 @@ const UserLogin: React.FC<UserLoginProps> = ({ onSwitchToRegister }) => {
         
         <div className="auth-switch">
           <p>Don't have an account? 
-            <button 
-              type="button" 
-              className="switch-link" 
-              onClick={onSwitchToRegister}
-            >
+            <Link to="/register" className="switch-link">
               Register
-            </button>
+            </Link>
           </p>
         </div>
       </div>

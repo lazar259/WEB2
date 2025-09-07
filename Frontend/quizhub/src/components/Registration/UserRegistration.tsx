@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import './UserRegistration.css';
 import authService from '../../services/authService';
 import { RegisterRequest } from '../../services/types';
@@ -19,11 +20,8 @@ interface FormErrors {
   profilePicture?: string;
 }
 
-interface UserRegistrationProps {
-  onSwitchToLogin: () => void;
-}
-
-const UserRegistration: React.FC<UserRegistrationProps> = ({ onSwitchToLogin }) => {
+const UserRegistration: React.FC = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<FormData>({
     username: '',
     email: '',
@@ -146,13 +144,12 @@ const UserRegistration: React.FC<UserRegistrationProps> = ({ onSwitchToLogin }) 
         const response = await authService.register(registerData);
 
         if (response.success) {
-          // Save token and redirect or update app state
-          if (response.token) {
-            authService.saveAuthToken(response.token);
-          }
           console.log('Registration successful:', response);
-          // Handle successful registration (e.g., redirect to dashboard)
+          console.log('Redirecting to login page...');
+          // Redirect to login page after successful registration
+          navigate('/login');
         } else {
+          console.log('Registration failed:', response);
           // Handle registration error - response is ApiError type here
           if ('errors' in response && response.errors) {
             setErrors(response.errors);
@@ -171,6 +168,9 @@ const UserRegistration: React.FC<UserRegistrationProps> = ({ onSwitchToLogin }) 
   return (
     <div className="auth-container registration-container">
       <div className="auth-card">
+        <Link to="/" className="back-button">
+          ← Back to Home
+        </Link>
         <div className="welcome-section">
           <h1 className="welcome-title register">Welcome to QuizHub</h1>
           <p className="welcome-subtitle">Join our community of learners and test your knowledge!</p>
@@ -269,13 +269,9 @@ const UserRegistration: React.FC<UserRegistrationProps> = ({ onSwitchToLogin }) 
         
         <div className="auth-switch">
           <p>Already have an account? 
-            <button 
-              type="button" 
-              className="switch-link" 
-              onClick={onSwitchToLogin}
-            >
+            <Link to="/login" className="switch-link">
               Log In
-            </button>
+            </Link>
           </p>
         </div>
       </div>

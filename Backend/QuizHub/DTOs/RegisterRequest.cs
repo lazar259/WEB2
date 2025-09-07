@@ -24,7 +24,7 @@ namespace QuizHub.DTOs
         [MaxLength(100)]
         public string Email { get; set; } = string.Empty;
 
-        public UserType UserType { get; set; } = UserType.Regular;
+        public UserType UserType { get; set; } = UserType.Student;
 
         public string? ProfilePicture { get; set; }
 

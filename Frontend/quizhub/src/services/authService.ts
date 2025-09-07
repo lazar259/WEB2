@@ -22,17 +22,49 @@ class AuthService {
         ...options,
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
+        // Handle 401 Unauthorized specifically
+        if (response.status === 401) {
+          return {
+            success: false,
+            message: "Invalid username or password",
+            errors: undefined,
+          };
+        }
+
+        let errorMessage;
+        let errors;
+        try {
+          // First try to parse as JSON
+          const data = await response.json();
+          errorMessage = data.message || data.title || data.error || `HTTP ${response.status}: ${response.statusText}`;
+          errors = data.errors;
+        } catch {
+          // If not JSON, get as plain text
+          try {
+            const textResponse = await response.text();
+            errorMessage = textResponse.trim() || `HTTP ${response.status}: ${response.statusText}`;
+          } catch {
+            errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+          }
+        }
+
         return {
           success: false,
-          message: data.message || 'An error occurred',
-          errors: data.errors,
+          message: errorMessage,
+          errors: errors,
         };
       }
 
-      return data;
+      const data = await response.json();
+
+      // Success case: wrap the API response with success flag
+      return {
+        success: true,
+        message: 'Request successful',
+        token: data.token,
+        user: data.user
+      };
     } catch (error) {
       return {
         success: false,
@@ -42,18 +74,24 @@ class AuthService {
   }
 
   async login(credentials: LoginRequest): Promise<AuthResponse | ApiError> {
-    return this.makeRequest('/auth/login', {
+    console.log('Login attempt:', credentials);
+    const response = await this.makeRequest('/auth/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
     });
+    console.log('Login response:', response);
+    return response;
   }
 
   async register(userData: RegisterRequest): Promise<AuthResponse | ApiError> {
+    console.log('Registration attempt:', userData);
     // Send as JSON since .NET Core API expects [FromBody]
-    return this.makeRequest('/auth/register', {
+    const response = await this.makeRequest('/auth/register', {
       method: 'POST',
       body: JSON.stringify(userData),
     });
+    console.log('Registration response:', response);
+    return response;
   }
 
   // Helper method to convert File to base64
@@ -92,5 +130,6 @@ class AuthService {
   }
 }
 
-// Export singleton instance
-export default new AuthService();
+// Create and export singleton instance
+const authService = new AuthService();
+export default authService;

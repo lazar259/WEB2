@@ -1,4 +1,6 @@
 /* QuizHub App Styles */
 .App {
-  /* Main app container styles if needed */
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
