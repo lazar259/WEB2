@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './LandingPage.css';
 import Navbar from '../Navbar/Navbar';
 
-const LandingPage: React.FC = () => {
+const LandingPage = () => {
   const navigate = useNavigate();
 
   const handleLoginClick = () => navigate('/login');
@@ -141,7 +141,7 @@ const LandingPage: React.FC = () => {
               <h2 className="section-title">About QuizHub</h2>
               <p className="about-description">
                 QuizHub is designed to make learning fun and accessible for everyone. 
-                Whether you're a student preparing for exams, a professional looking to 
+                Whether you're a learner preparing for exams, a professional looking to 
                 expand your knowledge, or simply someone who loves trivia, our platform 
                 provides engaging quizzes that adapt to your learning style.
               </p>
@@ -161,7 +161,7 @@ const LandingPage: React.FC = () => {
                 <div className="card-header">
                   <div className="user-avatar">👨‍🎓</div>
                   <div className="user-info">
-                    <div className="user-name">Alex Student</div>
+                    <div className="user-name">Alex User</div>
                     <div className="user-level">Level 15</div>
                   </div>
                 </div>

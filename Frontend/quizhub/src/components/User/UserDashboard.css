@@ -1,12 +1,12 @@
-.student-dashboard {
+.user-dashboard {
   min-height: 100vh;
   background: #f8f9fa;
   width: 100%;
   overflow-x: hidden;
 }
 
-/* Student Header */
-.student-header {
+/* User Header */
+.user-header {
   background: white;
   border-bottom: 1px solid #e9ecef;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
@@ -15,7 +15,7 @@
   z-index: 100;
 }
 
-.student-header-content {
+.user-header-content {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 32px;
@@ -25,7 +25,7 @@
   height: 70px;
 }
 
-.student-brand h1 {
+.user-brand h1 {
   font-size: 28px;
   font-weight: 700;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -36,7 +36,7 @@
   margin-bottom: 4px;
 }
 
-.student-badge {
+.user-badge {
   background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
   color: white;
   padding: 4px 12px;
@@ -47,12 +47,12 @@
   letter-spacing: 0.5px;
 }
 
-.student-actions {
+.user-actions {
   display: flex;
   gap: 12px;
 }
 
-.student-btn {
+.user-btn {
   padding: 10px 20px;
   border-radius: 8px;
   font-size: 14px;
@@ -88,11 +88,11 @@
 }
 
 /* Main Content */
-.student-main {
+.user-main {
   padding: 32px 0;
 }
 
-.student-container {
+.user-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 32px;
@@ -458,62 +458,62 @@
 
 /* Responsive Design */
 @media (max-width: 1024px) {
-  .student-container {
+  .user-container {
     padding: 0 24px;
   }
-  
-  .student-header-content {
+
+  .user-header-content {
     padding: 0 24px;
   }
 }
 
 @media (max-width: 768px) {
-  .student-container {
+  .user-container {
     padding: 0 16px;
   }
-  
-  .student-header-content {
+
+  .user-header-content {
     padding: 0 16px;
     height: 60px;
   }
-  
-  .student-brand h1 {
+
+  .user-brand h1 {
     font-size: 24px;
   }
-  
+
   .welcome-title {
     font-size: 28px;
   }
-  
+
   .welcome-subtitle {
     font-size: 15px;
   }
-  
+
   .progress-cards,
   .actions-grid,
   .categories-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .progress-card,
   .action-card,
   .category-card {
     padding: 20px;
   }
-  
-  .student-actions {
+
+  .user-actions {
     flex-direction: column;
     gap: 8px;
   }
-  
-  .student-btn {
+
+  .user-btn {
     padding: 10px 16px;
     font-size: 13px;
   }
 }
 
 @media (max-width: 480px) {
-  .student-main {
+  .user-main {
     padding: 20px 0;
   }
   

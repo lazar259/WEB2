@@ -61,35 +61,36 @@ export const isTokenExpired = (token: string): boolean => {
 /**
  * Get user type from JWT token
  */
-export const getUserTypeFromToken = (token: string): 'admin' | 'student' | null => {
+export const getUserTypeFromToken = (token: string): 'admin' | 'user' | null => {
   const payload = decodeJWT(token);
-  
+
   if (!payload) {
     return null;
   }
-  
+
   // Get user type from Microsoft ClaimTypes.Role
   const userType = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
-  
+
   // Normalize the value to lowercase and check if it's valid
   if (typeof userType === 'string') {
     const normalizedType = userType.toLowerCase();
-    if (normalizedType === 'admin' || normalizedType === 'student') {
-      return normalizedType as 'admin' | 'student';
+    if (normalizedType === 'admin' || normalizedType === 'user' || normalizedType === 'student') {
+      // Map 'student' to 'user' for backward compatibility
+      return normalizedType === 'student' ? 'user' : normalizedType as 'admin' | 'user';
     }
   }
-  
+
   return null;
 };
 
 /**
  * Get user info from JWT token
  */
-export const getUserInfoFromToken = (token: string): { 
-  id: string; 
-  email: string; 
-  username: string; 
-  userType: 'admin' | 'student' 
+export const getUserInfoFromToken = (token: string): {
+  id: string;
+  email: string;
+  username: string;
+  userType: 'admin' | 'user'
 } | null => {
   const payload = decodeJWT(token);
   if (!payload) return null;

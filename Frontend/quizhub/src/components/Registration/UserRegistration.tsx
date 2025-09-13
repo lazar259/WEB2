@@ -20,7 +20,7 @@ interface FormErrors {
   profilePicture?: string;
 }
 
-const UserRegistration: React.FC = () => {
+const UserRegistration = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<FormData>({
     username: '',

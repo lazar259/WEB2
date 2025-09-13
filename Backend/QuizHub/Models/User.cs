@@ -4,7 +4,7 @@ namespace QuizHub.Models
 {
     public enum UserType
     {
-        Student,
+        User,
         Admin
     }
 
@@ -25,7 +25,7 @@ namespace QuizHub.Models
         [MaxLength(100)]
         public string Email { get; set; } = string.Empty;
 
-        public UserType UserType { get; set; } = UserType.Student;
+        public UserType UserType { get; set; } = UserType.User;
 
         public string? ProfilePicture { get; set; }
     }

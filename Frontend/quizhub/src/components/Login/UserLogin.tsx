@@ -15,7 +15,7 @@ interface LoginFormErrors {
   password?: string;
 }
 
-const UserLogin: React.FC = () => {
+const UserLogin = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<LoginFormData>({
     username: '',
@@ -83,9 +83,9 @@ const UserLogin: React.FC = () => {
             console.log(userType);
             if (userType === 'admin') {
               navigate('/admin/dashboard');
-            } else if (userType === 'student') {
+            } else if (userType === 'user') {
               console.log("here");
-              navigate('/student/dashboard');
+              navigate('/user/dashboard');
             } else {
               // Fallback to main page if user type is unknown
               navigate('/');

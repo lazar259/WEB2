@@ -4,15 +4,15 @@ import { isAuthenticated, getUserTypeFromToken, getAuthToken } from '../../utils
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requiredUserType?: 'admin' | 'student';
+  requiredUserType?: 'admin' | 'user';
   redirectTo?: string;
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
-  children, 
+const ProtectedRoute = ({
+  children,
   requiredUserType,
-  redirectTo = '/login' 
-}) => {
+  redirectTo = '/login'
+}: ProtectedRouteProps) => {
   // Check if user is authenticated
   if (!isAuthenticated()) {
     return <Navigate to={redirectTo} replace />;
@@ -30,8 +30,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
       // Redirect to appropriate dashboard based on actual user type
       if (userType === 'admin') {
         return <Navigate to="/admin/dashboard" replace />;
-      } else if (userType === 'student') {
-        return <Navigate to="/student/dashboard" replace />;
+      } else if (userType === 'user') {
+        return <Navigate to="/user/dashboard" replace />;
       } else {
         // Unknown user type, redirect to home
         return <Navigate to="/" replace />;
