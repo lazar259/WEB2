@@ -153,3 +153,46 @@ export interface UpdateQuizRequest {
   isActive: boolean;
   questions: UpdateQuestionRequest[];
 }
+
+// Quiz Attempt types
+export interface StartQuizRequest {
+  quizId: number;
+}
+
+export interface SubmitAnswerRequest {
+  questionId: number;
+  userAnswer?: string;
+  selectedOptionIds: number[];
+}
+
+export interface QuizAnswerResponse {
+  questionId: number;
+  questionText: string;
+  userAnswer?: string;
+  selectedOptionIds: number[];
+  isCorrect: boolean;
+  pointsEarned: number;
+  answeredAt: string;
+}
+
+export interface QuizAttemptResponse {
+  id: number;
+  quizId: number;
+  quizTitle: string;
+  startedAt: string;
+  completedAt?: string;
+  score: number;
+  maxScore: number;
+  percentage: number;
+  isCompleted: boolean;
+  timeSpentInSeconds: number;
+  answers: QuizAnswerResponse[];
+}
+
+export interface QuizSessionResponse {
+  attemptId: number;
+  quiz: QuizResponse;
+  startedAt: string;
+  timeRemainingInSeconds: number;
+  currentAnswers: QuizAnswerResponse[];
+}

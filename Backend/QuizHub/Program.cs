@@ -26,11 +26,13 @@ namespace QuizHub
             // Register Repository Pattern dependencies
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IQuizRepository, QuizRepository>();
+            builder.Services.AddScoped<IQuizAttemptRepository, QuizAttemptRepository>();
 
             // Register Service Layer dependencies
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IJwtService, JwtService>();
             builder.Services.AddScoped<IQuizService, QuizService>();
+            builder.Services.AddScoped<IQuizAttemptService, QuizAttemptService>();
 
             // Configure CORS
             builder.Services.AddCors(options =>

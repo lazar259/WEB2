@@ -7,6 +7,8 @@ import LandingPage from './components/LandingPage/LandingPage';
 import AdminDashboard from './components/Admin/AdminDashboard';
 import UserDashboard from './components/User/UserDashboard';
 import QuizManagement from './components/Admin/QuizManagement/QuizManagement';
+import QuizTaking from './components/Quiz/QuizTaking';
+import QuizResults from './components/Quiz/QuizResults';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 
 function App() {
@@ -38,6 +40,22 @@ function App() {
             element={
               <ProtectedRoute requiredUserType="user">
                 <UserDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/quiz/:quizId/take"
+            element={
+              <ProtectedRoute requiredUserType="user">
+                <QuizTaking />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/quiz/:quizId/results/:attemptId"
+            element={
+              <ProtectedRoute requiredUserType="user">
+                <QuizResults />
               </ProtectedRoute>
             }
           />

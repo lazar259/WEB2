@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import UserQuizList from './UserQuizList';
 import './UserDashboard.css';
 
 const UserDashboard = () => {
@@ -8,6 +9,10 @@ const UserDashboard = () => {
   const handleLogout = () => {
     localStorage.removeItem('authToken');
     navigate('/');
+  };
+
+  const handleTakeQuiz = (quizId: number) => {
+    navigate(`/quiz/${quizId}/take`);
   };
 
   return (
@@ -38,6 +43,11 @@ const UserDashboard = () => {
             <p className="welcome-subtitle">
               Continue your learning journey and test your knowledge with our interactive quizzes
             </p>
+          </section>
+
+          {/* Quiz List Section */}
+          <section className="quiz-section">
+            <UserQuizList onTakeQuiz={handleTakeQuiz} />
           </section>
 
         </div>

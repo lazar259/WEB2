@@ -218,7 +218,7 @@ namespace QuizHub.Services
                     QuestionId = a.QuestionId,
                     QuestionText = a.Question?.QuestionText ?? "",
                     UserAnswer = a.UserAnswer,
-                    SelectedOptionIds = a.SelectedOptionIds,
+                    SelectedOptionIds = a.SelectedOptionIds.ToList(),
                     IsCorrect = a.IsCorrect,
                     PointsEarned = a.PointsEarned,
                     AnsweredAt = a.AnsweredAt
@@ -245,7 +245,7 @@ namespace QuizHub.Services
                     QuestionId = a.QuestionId,
                     QuestionText = a.Question?.QuestionText ?? "",
                     UserAnswer = a.UserAnswer,
-                    SelectedOptionIds = a.SelectedOptionIds,
+                    SelectedOptionIds = a.SelectedOptionIds.ToList(),
                     IsCorrect = a.IsCorrect,
                     PointsEarned = a.PointsEarned,
                     AnsweredAt = a.AnsweredAt

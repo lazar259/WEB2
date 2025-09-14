@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using QuizHub.DTOs;
 using QuizHub.Services.Interfaces;
+using System.Security.Claims;
 
 namespace QuizHub.Controllers
 {
@@ -19,7 +20,7 @@ namespace QuizHub.Controllers
 
         private int GetCurrentUserId()
         {
-            var userIdClaim = User.FindFirst("UserId");
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
             {
                 throw new UnauthorizedAccessException("User ID not found in token");
