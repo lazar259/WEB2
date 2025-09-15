@@ -70,5 +70,15 @@ namespace QuizHub.Database.Repositories
             return await _context.QuizAttempts
                 .AnyAsync(qa => qa.UserId == userId && qa.QuizId == quizId);
         }
+
+        public override async Task<IEnumerable<QuizAttempt>> GetAllAsync()
+        {
+            return await _context.QuizAttempts
+                .Include(qa => qa.Quiz)
+                .Include(qa => qa.User)
+                .Include(qa => qa.Answers)
+                    .ThenInclude(a => a.Question)
+                .ToListAsync();
+        }
     }
 }
