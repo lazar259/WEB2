@@ -25,7 +25,18 @@ const UserDashboard = () => {
             <span className="user-badge">User</span>
           </div>
           <div className="user-actions">
-            <button className="user-btn profile-btn">Profile</button>
+            <button
+              className="user-btn nav-btn"
+              onClick={() => navigate('/user/my-results')}
+            >
+              My Results
+            </button>
+            <button
+              className="user-btn nav-btn"
+              onClick={() => navigate('/rankings')}
+            >
+              Rankings
+            </button>
             <button className="user-btn logout-btn" onClick={handleLogout}>
               Logout
             </button>

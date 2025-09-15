@@ -167,5 +167,59 @@ namespace QuizHub.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+        [HttpGet("rankings")]
+        public async Task<ActionResult<IEnumerable<RankingEntryResponse>>> GetGlobalRankings(
+            [FromQuery] int? quizId = null,
+            [FromQuery] string? timePeriod = "all")
+        {
+            try
+            {
+                var rankings = await _quizAttemptService.GetGlobalRankingsAsync(quizId, timePeriod);
+                return Ok(rankings);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpDelete("{attemptId}")]
+        public async Task<ActionResult> DeleteAttempt(int attemptId)
+        {
+            try
+            {
+                var userId = GetCurrentUserId();
+                var success = await _quizAttemptService.DeleteAttemptAsync(attemptId, userId);
+
+                if (!success)
+                    return NotFound("Quiz attempt not found or not authorized to delete");
+
+                return Ok();
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpGet("admin/all-attempts")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<IEnumerable<QuizAttemptResponse>>> GetAllAttempts()
+        {
+            try
+            {
+                var attempts = await _quizAttemptService.GetAllAttemptsAsync();
+                return Ok(attempts);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
     }
 }

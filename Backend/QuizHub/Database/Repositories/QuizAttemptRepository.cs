@@ -55,6 +55,16 @@ namespace QuizHub.Database.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<QuizAttempt>> GetCompletedAttemptsAsync()
+        {
+            return await _context.QuizAttempts
+                .Include(qa => qa.Quiz)
+                .Include(qa => qa.User)
+                .Where(qa => qa.IsCompleted)
+                .OrderByDescending(qa => qa.CompletedAt)
+                .ToListAsync();
+        }
+
         public async Task<bool> HasUserAttemptedQuizAsync(int userId, int quizId)
         {
             return await _context.QuizAttempts

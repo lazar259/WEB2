@@ -10,5 +10,8 @@ namespace QuizHub.Services.Interfaces
         Task<QuizSessionResponse?> GetActiveSessionAsync(int attemptId, int userId);
         Task<IEnumerable<QuizAttemptResponse>> GetUserAttemptsAsync(int userId);
         Task<QuizAttemptResponse?> GetAttemptResultsAsync(int attemptId, int userId);
+        Task<IEnumerable<RankingEntryResponse>> GetGlobalRankingsAsync(int? quizId, string? timePeriod);
+        Task<bool> DeleteAttemptAsync(int attemptId, int userId);
+        Task<IEnumerable<QuizAttemptResponse>> GetAllAttemptsAsync();
     }
 }

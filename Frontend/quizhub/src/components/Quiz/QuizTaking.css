@@ -40,9 +40,33 @@
   font-weight: 500;
 }
 
+.quiz-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
 .quiz-timer {
   display: flex;
   align-items: center;
+}
+
+.btn-cancel {
+  background: #dc3545;
+  color: white;
+  border: 2px solid #dc3545;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-cancel:hover {
+  background: #c82333;
+  border-color: #c82333;
+  transform: translateY(-1px);
 }
 
 .timer {

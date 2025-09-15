@@ -157,6 +157,7 @@ export interface UpdateQuizRequest {
 // Quiz Attempt types
 export interface StartQuizRequest {
   quizId: number;
+  restart?: boolean;
 }
 
 export interface SubmitAnswerRequest {
@@ -177,6 +178,8 @@ export interface QuizAnswerResponse {
 
 export interface QuizAttemptResponse {
   id: number;
+  userId: number;
+  userName: string;
   quizId: number;
   quizTitle: string;
   startedAt: string;
@@ -195,4 +198,17 @@ export interface QuizSessionResponse {
   startedAt: string;
   timeRemainingInSeconds: number;
   currentAnswers: QuizAnswerResponse[];
+}
+
+export interface RankingEntryResponse {
+  id: number;
+  userId: number;
+  userName: string;
+  quizId: number;
+  quizTitle: string;
+  score: number;
+  maxScore: number;
+  percentage: number;
+  timeSpentInSeconds: number;
+  completedAt: string;
 }

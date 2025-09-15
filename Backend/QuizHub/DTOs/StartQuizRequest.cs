@@ -6,5 +6,7 @@ namespace QuizHub.DTOs
     {
         [Required]
         public int QuizId { get; set; }
+
+        public bool Restart { get; set; } = false;
     }
 }

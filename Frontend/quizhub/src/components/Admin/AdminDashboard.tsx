@@ -20,7 +20,6 @@ const AdminDashboard = () => {
             <span className="admin-badge">Administrator</span>
           </div>
           <div className="admin-actions">
-            <button className="admin-btn profile-btn">Profile</button>
             <button className="admin-btn logout-btn" onClick={handleLogout}>
               Logout
             </button>
@@ -60,54 +59,21 @@ const AdminDashboard = () => {
               </div>
             </div>
 
-            <div className="dashboard-card users-card">
-              <div className="card-icon">👥</div>
-              <div className="card-content">
-                <h3>User Management</h3>
-                <p>Manage users and administrators</p>
-                <ul>
-                  <li>View all registered users</li>
-                  <li>Assign roles and permissions</li>
-                  <li>Monitor user activity</li>
-                  <li>Handle user reports</li>
-                </ul>
-              </div>
-              <div className="card-action">
-                <button className="card-btn" disabled>Coming Soon</button>
-              </div>
-            </div>
-
-            <div className="dashboard-card analytics-card">
+            <div className="dashboard-card results-card" onClick={() => navigate('/admin/results-management')}>
               <div className="card-icon">📊</div>
               <div className="card-content">
-                <h3>Analytics & Reports</h3>
-                <p>View detailed statistics and insights</p>
+                <h3>Results Management</h3>
+                <p>View and analyze all user quiz results</p>
                 <ul>
-                  <li>Quiz performance metrics</li>
-                  <li>User engagement statistics</li>
-                  <li>Popular quiz categories</li>
+                  <li>View all user quiz attempts</li>
+                  <li>Filter results by user, quiz, or date</li>
+                  <li>Monitor quiz performance metrics</li>
+                  <li>Analyze user engagement patterns</li>
                   <li>Export detailed reports</li>
                 </ul>
               </div>
               <div className="card-action">
-                <button className="card-btn" disabled>Coming Soon</button>
-              </div>
-            </div>
-
-            <div className="dashboard-card settings-card">
-              <div className="card-icon">⚙️</div>
-              <div className="card-content">
-                <h3>System Settings</h3>
-                <p>Configure platform settings</p>
-                <ul>
-                  <li>General system configuration</li>
-                  <li>Security settings</li>
-                  <li>Email notifications</li>
-                  <li>Platform customization</li>
-                </ul>
-              </div>
-              <div className="card-action">
-                <button className="card-btn" disabled>Coming Soon</button>
+                <button className="card-btn">Manage Results →</button>
               </div>
             </div>
           </section>

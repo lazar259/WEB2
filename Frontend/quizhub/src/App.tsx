@@ -7,8 +7,11 @@ import LandingPage from './components/LandingPage/LandingPage';
 import AdminDashboard from './components/Admin/AdminDashboard';
 import UserDashboard from './components/User/UserDashboard';
 import QuizManagement from './components/Admin/QuizManagement/QuizManagement';
+import ResultsManagement from './components/Admin/ResultsManagement';
 import QuizTaking from './components/Quiz/QuizTaking';
 import QuizResults from './components/Quiz/QuizResults';
+import MyResults from './components/User/MyResults';
+import GlobalRankings from './components/User/GlobalRankings';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 
 function App() {
@@ -36,6 +39,14 @@ function App() {
             }
           />
           <Route
+            path="/admin/results-management"
+            element={
+              <ProtectedRoute requiredUserType="admin">
+                <ResultsManagement />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/user/dashboard"
             element={
               <ProtectedRoute requiredUserType="user">
@@ -56,6 +67,22 @@ function App() {
             element={
               <ProtectedRoute requiredUserType="user">
                 <QuizResults />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/user/my-results"
+            element={
+              <ProtectedRoute requiredUserType="user">
+                <MyResults />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/rankings"
+            element={
+              <ProtectedRoute requiredUserType="user">
+                <GlobalRankings />
               </ProtectedRoute>
             }
           />

@@ -3,6 +3,7 @@ import {
   SubmitAnswerRequest,
   QuizSessionResponse,
   QuizAttemptResponse,
+  RankingEntryResponse,
   ApiError
 } from './types';
 
@@ -128,6 +129,37 @@ class QuizAttemptService {
     console.log('Getting attempt results:', attemptId);
     const response = await this.makeRequest<QuizAttemptResponse>(`/quizattempt/${attemptId}/results`);
     console.log('Get attempt results response:', response);
+    return response;
+  }
+
+  // Get global rankings
+  async getGlobalRankings(quizId?: number, timePeriod?: string): Promise<RankingEntryResponse[] | ApiError> {
+    console.log('Getting global rankings:', { quizId, timePeriod });
+    const params = new URLSearchParams();
+    if (quizId) params.append('quizId', quizId.toString());
+    if (timePeriod) params.append('timePeriod', timePeriod);
+
+    const endpoint = `/quizattempt/rankings${params.toString() ? `?${params.toString()}` : ''}`;
+    const response = await this.makeRequest<RankingEntryResponse[]>(endpoint);
+    console.log('Get global rankings response:', response);
+    return response;
+  }
+
+  // Delete quiz attempt
+  async deleteAttempt(attemptId: number): Promise<{} | ApiError> {
+    console.log('Deleting quiz attempt:', attemptId);
+    const response = await this.makeRequest<{}>(`/quizattempt/${attemptId}`, {
+      method: 'DELETE',
+    });
+    console.log('Delete attempt response:', response);
+    return response;
+  }
+
+  // Get all attempts (admin only)
+  async getAllAttempts(): Promise<QuizAttemptResponse[] | ApiError> {
+    console.log('Getting all quiz attempts (admin)');
+    const response = await this.makeRequest<QuizAttemptResponse[]>('/quizattempt/admin/all-attempts');
+    console.log('Get all attempts response:', response);
     return response;
   }
 }

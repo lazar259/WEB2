@@ -52,6 +52,18 @@ const QuizTaking = () => {
     if (quizId) {
       startQuiz(parseInt(quizId));
     }
+
+    // Cleanup function to reset state when component unmounts or quizId changes
+    return () => {
+      setSession(null);
+      setQuiz(null);
+      setCurrentQuestionIndex(0);
+      setAnswers(new Map());
+      setTimeRemaining(0);
+      setIsSubmitting(false);
+      setError(null);
+      setLoading(true);
+    };
   }, [quizId]);
 
   const startQuiz = async (quizIdNum: number) => {
@@ -59,7 +71,15 @@ const QuizTaking = () => {
       setLoading(true);
       setError(null);
 
-      const response = await quizAttemptService.startQuiz({ quizId: quizIdNum });
+      // Reset all state when starting a new quiz
+      setSession(null);
+      setQuiz(null);
+      setCurrentQuestionIndex(0);
+      setAnswers(new Map());
+      setTimeRemaining(0);
+      setIsSubmitting(false);
+
+      const response = await quizAttemptService.startQuiz({ quizId: quizIdNum, restart: true });
 
       if ('success' in response && !response.success) {
         setError(response.message);
@@ -169,6 +189,30 @@ const QuizTaking = () => {
       setError('Failed to complete quiz');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleCancelQuiz = async () => {
+    const confirmCancel = window.confirm(
+      'Are you sure you want to cancel this quiz? Your progress will be lost.'
+    );
+
+    if (confirmCancel && session) {
+      try {
+        // Delete the incomplete quiz attempt
+        const response = await quizAttemptService.deleteAttempt(session.attemptId);
+
+        if ('success' in response && !response.success) {
+          console.error('Failed to delete attempt:', response.message);
+          // Still navigate away even if delete fails
+        }
+
+        navigate('/user/dashboard');
+      } catch (err) {
+        console.error('Error deleting attempt:', err);
+        // Still navigate away even if delete fails
+        navigate('/user/dashboard');
+      }
     }
   };
 
@@ -337,10 +381,20 @@ const QuizTaking = () => {
             </div>
           </div>
 
-          <div className="quiz-timer">
-            <div className={`timer ${timeRemaining <= 300 ? 'timer-warning' : ''} ${timeRemaining <= 60 ? 'timer-danger' : ''}`}>
-              <span className="timer-icon">⏱️</span>
-              <span className="timer-text">{formatTime(timeRemaining)}</span>
+          <div className="quiz-header-actions">
+            <button
+              className="btn btn-cancel"
+              onClick={handleCancelQuiz}
+              title="Cancel Quiz"
+            >
+              Cancel Quiz
+            </button>
+
+            <div className="quiz-timer">
+              <div className={`timer ${timeRemaining <= 300 ? 'timer-warning' : ''} ${timeRemaining <= 60 ? 'timer-danger' : ''}`}>
+                <span className="timer-icon">⏱️</span>
+                <span className="timer-text">{formatTime(timeRemaining)}</span>
+              </div>
             </div>
           </div>
         </div>

@@ -40,7 +40,33 @@ namespace QuizHub.Services
             var existingAttempt = await _attemptRepository.GetActiveAttemptAsync(userId, request.QuizId);
             if (existingAttempt != null)
             {
-                return MapToQuizSessionResponse(existingAttempt);
+                if (request.Restart)
+                {
+                    // User wants to restart - mark the existing attempt as abandoned
+                    existingAttempt.IsCompleted = true;
+                    existingAttempt.CompletedAt = DateTime.UtcNow;
+                    var timeElapsed = (DateTime.UtcNow - existingAttempt.StartedAt).TotalSeconds;
+                    existingAttempt.TimeSpentInSeconds = (int)timeElapsed;
+                    await _attemptRepository.UpdateAsync(existingAttempt);
+                }
+                else
+                {
+                    // Check if the existing attempt has timed out
+                    var timeElapsed = (DateTime.UtcNow - existingAttempt.StartedAt).TotalMinutes;
+                    if (timeElapsed >= quiz.TimeLimitInMinutes)
+                    {
+                        // Time limit exceeded, complete the old attempt
+                        existingAttempt.IsCompleted = true;
+                        existingAttempt.CompletedAt = DateTime.UtcNow;
+                        existingAttempt.TimeSpentInSeconds = (int)timeElapsed * 60;
+                        await _attemptRepository.UpdateAsync(existingAttempt);
+                    }
+                    else
+                    {
+                        // Return the existing active attempt
+                        return MapToQuizSessionResponse(existingAttempt);
+                    }
+                }
             }
 
             // Create new attempt
@@ -231,6 +257,8 @@ namespace QuizHub.Services
             return new QuizAttemptResponse
             {
                 Id = attempt.Id,
+                UserId = attempt.UserId,
+                UserName = attempt.User?.Username ?? "Unknown User",
                 QuizId = attempt.QuizId,
                 QuizTitle = attempt.Quiz.Title,
                 StartedAt = attempt.StartedAt,
@@ -292,6 +320,82 @@ namespace QuizHub.Services
                         Order = o.Order
                     }).ToList()
                 }).ToList()
+            };
+        }
+
+        public async Task<IEnumerable<RankingEntryResponse>> GetGlobalRankingsAsync(int? quizId, string? timePeriod)
+        {
+            // Get all completed quiz attempts
+            var attempts = await _attemptRepository.GetCompletedAttemptsAsync();
+
+            // Filter by quiz if specified
+            if (quizId.HasValue)
+            {
+                attempts = attempts.Where(a => a.QuizId == quizId.Value);
+            }
+
+            // Filter by time period if specified
+            if (!string.IsNullOrEmpty(timePeriod) && timePeriod != "all")
+            {
+                var cutoffDate = GetTimePeriodCutoff(timePeriod);
+                if (cutoffDate.HasValue)
+                {
+                    attempts = attempts.Where(a => a.CompletedAt >= cutoffDate.Value);
+                }
+            }
+
+            // Convert to ranking entries and sort
+            var rankings = attempts.Select(a => new RankingEntryResponse
+            {
+                Id = a.Id,
+                UserId = a.UserId,
+                UserName = a.User?.Username ?? "Unknown User",
+                QuizId = a.QuizId,
+                QuizTitle = a.Quiz?.Title ?? "Unknown Quiz",
+                Score = a.Score,
+                MaxScore = a.MaxScore,
+                Percentage = a.MaxScore > 0 ? Math.Round((decimal)a.Score / a.MaxScore * 100, 1) : 0,
+                TimeSpentInSeconds = a.TimeSpentInSeconds,
+                CompletedAt = a.CompletedAt ?? DateTime.MinValue
+            })
+            .OrderByDescending(r => r.Score)
+            .ThenBy(r => r.TimeSpentInSeconds)
+            .ToList();
+
+            return rankings;
+        }
+
+        public async Task<bool> DeleteAttemptAsync(int attemptId, int userId)
+        {
+            var attempt = await _attemptRepository.GetByIdWithDetailsAsync(attemptId);
+            if (attempt == null || attempt.UserId != userId)
+                return false;
+
+            // Only allow deletion of incomplete attempts
+            if (attempt.IsCompleted)
+                return false;
+
+            await _attemptRepository.DeleteAsync(attemptId);
+            return true;
+        }
+
+        public async Task<IEnumerable<QuizAttemptResponse>> GetAllAttemptsAsync()
+        {
+            var attempts = await _attemptRepository.GetAllAsync();
+            return attempts
+                .Where(a => a.IsCompleted) // Only return completed attempts
+                .Select(MapToQuizAttemptResponse);
+        }
+
+        private DateTime? GetTimePeriodCutoff(string timePeriod)
+        {
+            var now = DateTime.UtcNow;
+            return timePeriod?.ToLower() switch
+            {
+                "weekly" => now.AddDays(-7),
+                "monthly" => now.AddMonths(-1),
+                "yearly" => now.AddYears(-1),
+                _ => null
             };
         }
     }
