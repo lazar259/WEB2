@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { QuizAttemptResponse } from '../../services/types';
 import quizAttemptService from '../../services/quizAttemptService';
+import ProgressionChart from './ProgressionChart';
 import './MyResults.css';
 
 const MyResults = () => {
@@ -124,8 +125,13 @@ const MyResults = () => {
             </button>
           </div>
         ) : (
-          <div className="results-table-container">
-            <table className="results-table">
+          <>
+            {/* Progression Chart */}
+            <ProgressionChart attempts={attempts} />
+
+            {/* Results Table */}
+            <div className="results-table-container">
+              <table className="results-table">
               <thead>
                 <tr>
                   <th>Quiz Name</th>
@@ -180,8 +186,9 @@ const MyResults = () => {
                   </tr>
                 ))}
               </tbody>
-            </table>
-          </div>
+              </table>
+            </div>
+          </>
         )}
       </main>
     </div>
