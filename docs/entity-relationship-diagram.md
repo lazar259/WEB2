@@ -5,33 +5,33 @@ This diagram shows the database structure and relationships between entities in 
 ```mermaid
 erDiagram
     User {
-        int Id PK
+        int Id
         string Username
         string Password
         string Email
-        UserType UserType
+        string UserType
         string ProfilePicture
     }
 
     Quiz {
-        int Id PK
+        int Id
         string Title
         string Description
         string Topic
-        int CreatedByUserId FK
-        DifficultyLevel Difficulty
+        int CreatedByUserId
+        string Difficulty
         int TimeLimitInMinutes
         int TotalPoints
-        DateTime CreatedAt
-        DateTime UpdatedAt
-        bool IsActive
+        datetime CreatedAt
+        datetime UpdatedAt
+        boolean IsActive
     }
 
     Question {
-        int Id PK
-        int QuizId FK
+        int Id
+        int QuizId
         string QuestionText
-        QuestionType Type
+        string Type
         int Points
         int Order
         string Explanation
@@ -39,35 +39,35 @@ erDiagram
     }
 
     QuestionOption {
-        int Id PK
-        int QuestionId FK
+        int Id
+        int QuestionId
         string OptionText
-        bool IsCorrect
+        boolean IsCorrect
         int Order
     }
 
     QuizAttempt {
-        int Id PK
-        int QuizId FK
-        int UserId FK
-        DateTime StartedAt
-        DateTime CompletedAt
+        int Id
+        int QuizId
+        int UserId
+        datetime StartedAt
+        datetime CompletedAt
         int Score
         int MaxScore
-        double Percentage
-        bool IsCompleted
+        float Percentage
+        boolean IsCompleted
         int TimeSpentInSeconds
     }
 
     QuizAnswer {
-        int Id PK
-        int QuizAttemptId FK
-        int QuestionId FK
+        int Id
+        int QuizAttemptId
+        int QuestionId
         string UserAnswer
         string SelectedOptionIds
-        bool IsCorrect
+        boolean IsCorrect
         int PointsEarned
-        DateTime AnsweredAt
+        datetime AnsweredAt
     }
 
     User ||--o{ Quiz : creates
