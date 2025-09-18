@@ -97,7 +97,7 @@ classDiagram
         +int QuestionId
         +Question Question
         +string UserAnswer
-        +ICollection~int~ SelectedOptionIds
+        +List~int~ SelectedOptionIds
         +bool IsCorrect
         +int PointsEarned
         +DateTime AnsweredAt
