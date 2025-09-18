@@ -141,12 +141,11 @@ const QuizManagement = () => {
             </div>
             <div className="admin-actions">
               <button
-                className="admin-btn dashboard-btn"
-                onClick={() => navigate('/admin/dashboard')}
+                className="admin-btn nav-btn"
+                onClick={() => navigate('/admin/results-management')}
               >
-                Dashboard
+                Results Management
               </button>
-              <button className="admin-btn profile-btn">Profile</button>
               <button className="admin-btn logout-btn" onClick={handleLogout}>
                 Logout
               </button>
@@ -183,12 +182,11 @@ const QuizManagement = () => {
           </div>
           <div className="admin-actions">
             <button
-              className="admin-btn dashboard-btn"
-              onClick={() => navigate('/admin/dashboard')}
+              className="admin-btn nav-btn"
+              onClick={() => navigate('/admin/results-management')}
             >
-              Dashboard
+              Results Management
             </button>
-            <button className="admin-btn profile-btn">Profile</button>
             <button className="admin-btn logout-btn" onClick={handleLogout}>
               Logout
             </button>

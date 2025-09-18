@@ -156,28 +156,39 @@ const ResultsManagement = () => {
     );
   }
 
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    navigate('/');
+  };
+
   return (
     <div className="results-management">
-      <header className="results-management-header">
-        <div className="header-navigation">
-          <button
-            className="nav-link"
-            onClick={() => navigate('/admin/dashboard')}
-          >
-            ← Dashboard
-          </button>
-          <button
-            className="nav-link"
-            onClick={() => navigate('/admin/quiz-management')}
-          >
-            Quiz Management
-          </button>
+      {/* Admin Header */}
+      <header className="admin-header">
+        <div className="admin-header-content">
+          <div className="admin-brand">
+            <h1>QuizHub Admin</h1>
+            <span className="admin-badge">Results Management</span>
+          </div>
+          <div className="admin-actions">
+            <button
+              className="admin-btn nav-btn"
+              onClick={() => navigate('/admin/quiz-management')}
+            >
+              Quiz Management
+            </button>
+            <button className="admin-btn logout-btn" onClick={handleLogout}>
+              Logout
+            </button>
+          </div>
         </div>
-        <h1>Results Management</h1>
-        <p>View and analyze all user quiz results</p>
       </header>
 
-      <main className="results-management-main">
+      <main className="admin-main">
+        <div className="results-management-header">
+          <h2>Results Management</h2>
+          <p>View and analyze all user quiz results</p>
+        </div>
         {/* Filters */}
         <div className="results-filters">
           <div className="filter-group">

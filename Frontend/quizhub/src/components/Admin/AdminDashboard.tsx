@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+
+  // Redirect to quiz management by default
+  useEffect(() => {
+    navigate('/admin/quiz-management');
+  }, [navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem('authToken');
