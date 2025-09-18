@@ -64,19 +64,19 @@ erDiagram
         int QuizAttemptId FK
         int QuestionId FK
         string UserAnswer
-        int SelectedOptionIds
+        string SelectedOptionIds
         bool IsCorrect
         int PointsEarned
         DateTime AnsweredAt
     }
 
-    User ||--o{ Quiz : "creates"
-    User ||--o{ QuizAttempt : "takes"
-    Quiz ||--o{ Question : "contains"
-    Quiz ||--o{ QuizAttempt : "attempted"
-    Question ||--o{ QuestionOption : "has"
-    Question ||--o{ QuizAnswer : "answered"
-    QuizAttempt ||--o{ QuizAnswer : "includes"
+    User ||--o{ Quiz : creates
+    User ||--o{ QuizAttempt : takes
+    Quiz ||--o{ Question : contains
+    Quiz ||--o{ QuizAttempt : attempted
+    Question ||--o{ QuestionOption : has
+    Question ||--o{ QuizAnswer : answered
+    QuizAttempt ||--o{ QuizAnswer : includes
 ```
 
 ## Key Relationships
