@@ -76,36 +76,28 @@ class QuizService {
 
   // Create a new quiz
   async createQuiz(quizData: CreateQuizRequest): Promise<QuizResponse | ApiError> {
-    console.log('Creating quiz:', quizData);
     const response = await this.makeRequest<QuizResponse>('/quiz', {
       method: 'POST',
       body: JSON.stringify(quizData),
     });
-    console.log('Create quiz response:', response);
     return response;
   }
 
   // Get all quizzes (for admin overview)
   async getAllQuizzes(): Promise<QuizSummaryResponse[] | ApiError> {
-    console.log('Fetching all quizzes');
     const response = await this.makeRequest<QuizSummaryResponse[]>('/quiz');
-    console.log('Get all quizzes response:', response);
     return response;
   }
 
   // Get active quizzes only
   async getActiveQuizzes(): Promise<QuizSummaryResponse[] | ApiError> {
-    console.log('Fetching active quizzes');
     const response = await this.makeRequest<QuizSummaryResponse[]>('/quiz/active');
-    console.log('Get active quizzes response:', response);
     return response;
   }
 
   // Get quizzes created by current user
   async getMyQuizzes(): Promise<QuizSummaryResponse[] | ApiError> {
-    console.log('Fetching my quizzes');
     const response = await this.makeRequest<QuizSummaryResponse[]>('/quiz/my-quizzes');
-    console.log('Get my quizzes response:', response);
     return response;
   }
 
@@ -130,60 +122,48 @@ class QuizService {
     const queryString = params.toString();
     const endpoint = `/quiz/filter${queryString ? '?' + queryString : ''}`;
 
-    console.log('Fetching filtered quizzes:', { difficulty, topic, isActive });
     const response = await this.makeRequest<QuizSummaryResponse[]>(endpoint);
-    console.log('Get filtered quizzes response:', response);
     return response;
   }
 
   // Get a specific quiz by ID
   async getQuizById(id: number): Promise<QuizResponse | ApiError> {
-    console.log('Fetching quiz by ID:', id);
     const response = await this.makeRequest<QuizResponse>(`/quiz/${id}`);
-    console.log('Get quiz by ID response:', response);
     return response;
   }
 
   // Update an existing quiz
   async updateQuiz(id: number, quizData: UpdateQuizRequest): Promise<QuizResponse | ApiError> {
-    console.log('Updating quiz:', { id, quizData });
     const response = await this.makeRequest<QuizResponse>(`/quiz/${id}`, {
       method: 'PUT',
       body: JSON.stringify(quizData),
     });
-    console.log('Update quiz response:', response);
     return response;
   }
 
   // Delete a quiz
   async deleteQuiz(id: number): Promise<boolean | ApiError> {
-    console.log('Deleting quiz:', id);
     const response = await this.makeRequest<{}>(`/quiz/${id}`, {
       method: 'DELETE',
     });
 
     if ('success' in response && !response.success) {
-      console.log('Delete quiz error:', response);
       return response;
     }
 
-    console.log('Quiz deleted successfully');
     return true;
   }
 
   // Toggle quiz status (active/inactive)
   async toggleQuizStatus(id: number): Promise<boolean | ApiError> {
-    console.log('Toggling quiz status:', id);
     const response = await this.makeRequest<{}>(`/quiz/${id}/toggle-status`, {
       method: 'PATCH',
     });
 
     if ('success' in response && !response.success) {
-      console.log('Toggle quiz status error:', response);
       return response;
     }
 
-    console.log('Quiz status toggled successfully');
     return true;
   }
 

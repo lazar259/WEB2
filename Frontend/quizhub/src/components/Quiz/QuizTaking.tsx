@@ -202,14 +202,9 @@ const QuizTaking = () => {
         // Delete the incomplete quiz attempt
         const response = await quizAttemptService.deleteAttempt(session.attemptId);
 
-        if ('success' in response && !response.success) {
-          console.error('Failed to delete attempt:', response.message);
-          // Still navigate away even if delete fails
-        }
-
+        // Navigate away regardless of delete success/failure
         navigate('/user/dashboard');
       } catch (err) {
-        console.error('Error deleting attempt:', err);
         // Still navigate away even if delete fails
         navigate('/user/dashboard');
       }

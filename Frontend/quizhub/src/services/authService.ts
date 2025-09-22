@@ -74,23 +74,19 @@ class AuthService {
   }
 
   async login(credentials: LoginRequest): Promise<AuthResponse | ApiError> {
-    console.log('Login attempt:', credentials);
     const response = await this.makeRequest('/auth/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
     });
-    console.log('Login response:', response);
     return response;
   }
 
   async register(userData: RegisterRequest): Promise<AuthResponse | ApiError> {
-    console.log('Registration attempt:', userData);
     // Send as JSON since .NET Core API expects [FromBody]
     const response = await this.makeRequest('/auth/register', {
       method: 'POST',
       body: JSON.stringify(userData),
     });
-    console.log('Registration response:', response);
     return response;
   }
 

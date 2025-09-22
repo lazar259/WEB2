@@ -144,12 +144,9 @@ const UserRegistration = () => {
         const response = await authService.register(registerData);
 
         if (response.success) {
-          console.log('Registration successful:', response);
-          console.log('Redirecting to login page...');
           // Redirect to login page after successful registration
           navigate('/login');
         } else {
-          console.log('Registration failed:', response);
           // Handle registration error - response is ApiError type here
           if ('errors' in response && response.errors) {
             setErrors(response.errors);

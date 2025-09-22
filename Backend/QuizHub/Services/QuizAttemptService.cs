@@ -118,7 +118,7 @@ namespace QuizHub.Services
                 existingAnswer.UserAnswer = request.UserAnswer;
                 existingAnswer.SelectedOptionIds = request.SelectedOptionIds;
                 existingAnswer.AnsweredAt = DateTime.UtcNow;
-                await EvaluateAnswer(existingAnswer, question);
+                EvaluateAnswer(existingAnswer, question);
             }
             else
             {
@@ -132,7 +132,7 @@ namespace QuizHub.Services
                     AnsweredAt = DateTime.UtcNow
                 };
 
-                await EvaluateAnswer(answer, question);
+                EvaluateAnswer(answer, question);
                 attempt.Answers.Add(answer);
             }
 
@@ -190,7 +190,7 @@ namespace QuizHub.Services
             return MapToQuizAttemptResponse(attempt);
         }
 
-        private async Task EvaluateAnswer(QuizAnswer answer, Question question)
+        private void EvaluateAnswer(QuizAnswer answer, Question question)
         {
             bool isCorrect = false;
 

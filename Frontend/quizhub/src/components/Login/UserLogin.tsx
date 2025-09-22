@@ -71,30 +71,24 @@ const UserLogin = () => {
         };
 
         const response = await authService.login(loginData);
-        console.log(response);
         if (response.success) {
           // Save token and redirect based on user type
-          console.log("success")
           if (response.token) {
             authService.saveAuthToken(response.token);
-            
+
             // Get user type from token and redirect accordingly
             const userType = getUserTypeFromToken(response.token);
-            console.log(userType);
             if (userType === 'admin') {
               navigate('/admin/dashboard');
             } else if (userType === 'user') {
-              console.log("here");
               navigate('/user/dashboard');
             } else {
               // Fallback to main page if user type is unknown
               navigate('/');
             }
           }
-          console.log('Login successful:', response);
         } else {
           // Handle login error - response is ApiError type here
-          console.log("error?")
           if ('errors' in response && response.errors) {
             setErrors(response.errors);
           } else {

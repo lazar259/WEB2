@@ -103,8 +103,6 @@ const UserQuizList = ({ onTakeQuiz }: UserQuizListProps) => {
   const handleTakeQuiz = (quizId: number) => {
     if (onTakeQuiz) {
       onTakeQuiz(quizId);
-    } else {
-      console.log(`Taking quiz ${quizId}`);
     }
   };
 
