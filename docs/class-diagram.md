@@ -32,8 +32,8 @@ classDiagram
         +string Email
         +UserType UserType
         +string ProfilePicture
-        +ICollection~Quiz~ CreatedQuizzes
-        +ICollection~QuizAttempt~ QuizAttempts
+        +CreatedQuizzes
+        +QuizAttempts
     }
 
     class Quiz {
@@ -49,7 +49,7 @@ classDiagram
         +DateTime CreatedAt
         +DateTime UpdatedAt
         +bool IsActive
-        +ICollection~Question~ Questions
+        +Questions
     }
 
     class Question {
@@ -62,7 +62,7 @@ classDiagram
         +int Order
         +string Explanation
         +string CorrectAnswer
-        +ICollection~QuestionOption~ Options
+        +Options
     }
 
     class QuestionOption {
@@ -87,7 +87,7 @@ classDiagram
         +double Percentage
         +bool IsCompleted
         +int TimeSpentInSeconds
-        +ICollection~QuizAnswer~ Answers
+        +Answers
     }
 
     class QuizAnswer {
@@ -97,19 +97,25 @@ classDiagram
         +int QuestionId
         +Question Question
         +string UserAnswer
-        +List~int~ SelectedOptionIds
+        +SelectedOptionIds
         +bool IsCorrect
         +int PointsEarned
         +DateTime AnsweredAt
     }
 
-    User ||--o{ Quiz : creates
-    User ||--o{ QuizAttempt : takes
-    Quiz ||--o{ Question : contains
-    Quiz ||--o{ QuizAttempt : attempted
-    Question ||--o{ QuestionOption : has
-    Question ||--o{ QuizAnswer : answered
-    QuizAttempt ||--o{ QuizAnswer : includes
+    User --> Quiz : creates
+    User --> QuizAttempt : takes
+    Quiz --> Question : contains
+    Quiz --> QuizAttempt : attempted
+    Question --> QuestionOption : has
+    Question --> QuizAnswer : answered
+    QuizAttempt --> QuizAnswer : includes
+
+
+    User --> UserType
+    Quiz --> DifficultyLevel
+    Question --> QuestionType
+
 
     User --> UserType
     Quiz --> DifficultyLevel
