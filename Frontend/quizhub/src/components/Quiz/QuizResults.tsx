@@ -7,6 +7,7 @@ import {
 } from '../../services/types';
 import quizAttemptService from '../../services/quizAttemptService';
 import quizService from '../../services/quizService';
+import { getUserTypeFromToken, getAuthToken } from '../../utils/jwt';
 import './QuizResults.css';
 
 const QuizResults = () => {
@@ -18,12 +19,30 @@ const QuizResults = () => {
   const [error, setError] = useState<string | null>(null);
   const [fullQuiz, setFullQuiz] = useState<any>(null);
 
+  // Helper function to get the appropriate dashboard based on user type
+  const getDashboardUrl = () => {
+    const token = getAuthToken();
+    if (!token) return '/';
+
+    const userType = getUserTypeFromToken(token);
+    return userType === 'admin' ? '/admin/results-management' : '/user/dashboard';
+  };
+
   const loadResults = async (attemptIdNum: number) => {
     try {
       setLoading(true);
       setError(null);
 
-      const response = await quizAttemptService.getAttemptResults(attemptIdNum);
+      // Use admin endpoint if user is admin, regular endpoint if user
+      const token = getAuthToken();
+      const userType = token ? getUserTypeFromToken(token) : null;
+
+      let response;
+      if (userType === 'admin') {
+        response = await quizAttemptService.getAttemptResultsAdmin(attemptIdNum);
+      } else {
+        response = await quizAttemptService.getAttemptResults(attemptIdNum);
+      }
 
       if ('success' in response && !response.success) {
         setError(response.message);
@@ -155,7 +174,7 @@ const QuizResults = () => {
         <div className="error-icon">⚠️</div>
         <h3>Error Loading Results</h3>
         <p>{error}</p>
-        <button className="btn btn-primary" onClick={() => navigate('/user/dashboard')}>
+        <button className="btn btn-primary" onClick={() => navigate(getDashboardUrl())}>
           Back to Dashboard
         </button>
       </div>
@@ -168,7 +187,7 @@ const QuizResults = () => {
         <div className="error-icon">❌</div>
         <h3>Results Not Found</h3>
         <p>The quiz results could not be loaded.</p>
-        <button className="btn btn-primary" onClick={() => navigate('/user/dashboard')}>
+        <button className="btn btn-primary" onClick={() => navigate(getDashboardUrl())}>
           Back to Dashboard
         </button>
       </div>
@@ -319,17 +338,19 @@ const QuizResults = () => {
           <section className="result-actions">
             <button
               className="btn btn-primary"
-              onClick={() => navigate('/user/dashboard')}
+              onClick={() => navigate(getDashboardUrl())}
             >
               Back to Dashboard
             </button>
 
-            <button
-              className="btn btn-outline"
-              onClick={() => navigate(`/quiz/${quizId}/take`)}
-            >
-              Retake Quiz
-            </button>
+            {getUserTypeFromToken(getAuthToken() || '') === 'user' && (
+              <button
+                className="btn btn-outline"
+                onClick={() => navigate(`/quiz/${quizId}/take`)}
+              >
+                Retake Quiz
+              </button>
+            )}
           </section>
         </div>
       </main>

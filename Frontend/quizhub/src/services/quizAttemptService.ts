@@ -144,6 +144,12 @@ class QuizAttemptService {
     const response = await this.makeRequest<QuizAttemptResponse[]>('/quizattempt/admin/all-attempts');
     return response;
   }
+
+  // Get quiz attempt results (admin only - no ownership check)
+  async getAttemptResultsAdmin(attemptId: number): Promise<QuizAttemptResponse | ApiError> {
+    const response = await this.makeRequest<QuizAttemptResponse>(`/quizattempt/admin/${attemptId}/results`);
+    return response;
+  }
 }
 
 // Create and export singleton instance

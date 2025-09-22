@@ -47,10 +47,10 @@ const QuizTaking = () => {
     return () => clearInterval(timer);
   }, [timeRemaining, session]);
 
-  // Start quiz effect
+  // Load quiz info and check for existing attempt
   useEffect(() => {
     if (quizId) {
-      startQuiz(parseInt(quizId));
+      checkForExistingAttempt(parseInt(quizId));
     }
 
     // Cleanup function to reset state when component unmounts or quizId changes
@@ -65,6 +65,42 @@ const QuizTaking = () => {
       setLoading(true);
     };
   }, [quizId]);
+
+  const checkForExistingAttempt = async (quizIdNum: number) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Try to start without restart to check for existing attempt
+      const response = await quizAttemptService.startQuiz({ quizId: quizIdNum, restart: false });
+
+      if ('success' in response && !response.success) {
+        // No existing attempt, just set loading to false so user can start
+        setLoading(false);
+      } else {
+        // Existing attempt found, continue with it
+        const sessionData = response as QuizSessionResponse;
+        setSession(sessionData);
+        setQuiz(sessionData.quiz);
+        setTimeRemaining(sessionData.timeRemainingInSeconds);
+
+        // Initialize answers map with existing answers
+        const existingAnswers = new Map<number, QuizAnswer>();
+        sessionData.currentAnswers.forEach(answer => {
+          existingAnswers.set(answer.questionId, {
+            questionId: answer.questionId,
+            userAnswer: answer.userAnswer,
+            selectedOptionIds: answer.selectedOptionIds || []
+          });
+        });
+        setAnswers(existingAnswers);
+        setLoading(false);
+      }
+    } catch (err) {
+      setError('Failed to load quiz');
+      setLoading(false);
+    }
+  };
 
   const startQuiz = async (quizIdNum: number) => {
     try {
@@ -349,12 +385,39 @@ const QuizTaking = () => {
     );
   }
 
-  if (!quiz || !session) {
+  if (!session) {
+    // No active session - show start quiz button
+    return (
+      <div className="quiz-start-screen">
+        <div className="start-quiz-container">
+          <h2>Ready to start the quiz?</h2>
+          <p>Click the button below to begin your quiz attempt.</p>
+          <div className="start-quiz-actions">
+            <button
+              className="btn btn-primary btn-large"
+              onClick={() => startQuiz(parseInt(quizId!))}
+              disabled={loading}
+            >
+              {loading ? 'Starting Quiz...' : 'Start Quiz'}
+            </button>
+            <button
+              className="btn btn-secondary"
+              onClick={() => navigate('/user/dashboard')}
+            >
+              Back to Dashboard
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!quiz) {
     return (
       <div className="quiz-taking-error">
         <div className="error-icon">❌</div>
         <h3>Quiz not found</h3>
-        <p>The quiz session could not be loaded.</p>
+        <p>The quiz could not be loaded.</p>
         <button className="btn btn-primary" onClick={() => navigate('/user/dashboard')}>
           Back to Dashboard
         </button>

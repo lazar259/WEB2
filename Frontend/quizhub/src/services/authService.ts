@@ -110,6 +110,17 @@ class AuthService {
     localStorage.setItem('authToken', token);
   }
 
+  // Helper method to save user data to localStorage
+  saveUserData(userData: any): void {
+    localStorage.setItem('userData', JSON.stringify(userData));
+  }
+
+  // Helper method to get user data from localStorage
+  getUserData(): any | null {
+    const userData = localStorage.getItem('userData');
+    return userData ? JSON.parse(userData) : null;
+  }
+
   // Helper method to get token from localStorage
   getAuthToken(): string | null {
     return localStorage.getItem('authToken');
@@ -118,6 +129,7 @@ class AuthService {
   // Helper method to remove token from localStorage
   removeAuthToken(): void {
     localStorage.removeItem('authToken');
+    localStorage.removeItem('userData'); // Also remove user data on logout
   }
 
   // Helper method to check if user is authenticated

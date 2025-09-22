@@ -221,5 +221,25 @@ namespace QuizHub.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+        [HttpGet("admin/{attemptId}/results")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<QuizAttemptResponse>> GetAttemptResultsAdmin(int attemptId)
+        {
+            try
+            {
+                // Admin endpoint - no user ownership check
+                var result = await _quizAttemptService.GetAttemptResultsByIdAsync(attemptId);
+
+                if (result == null)
+                    return NotFound("Quiz attempt not found");
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
     }
 }

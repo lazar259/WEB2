@@ -387,6 +387,16 @@ namespace QuizHub.Services
                 .Select(MapToQuizAttemptResponse);
         }
 
+        public async Task<QuizAttemptResponse?> GetAttemptResultsByIdAsync(int attemptId)
+        {
+            // Admin method - no user ownership check
+            var attempt = await _attemptRepository.GetByIdWithDetailsAsync(attemptId);
+            if (attempt == null)
+                return null;
+
+            return MapToQuizAttemptResponse(attempt);
+        }
+
         private DateTime? GetTimePeriodCutoff(string timePeriod)
         {
             var now = DateTime.UtcNow;

@@ -25,6 +25,18 @@
   height: 70px;
 }
 
+.brand-with-profile {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.brand-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
 .user-brand h1 {
   font-size: 28px;
   font-weight: 700;

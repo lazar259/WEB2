@@ -65,7 +65,7 @@ function App() {
           <Route
             path="/quiz/:quizId/results/:attemptId"
             element={
-              <ProtectedRoute requiredUserType="user">
+              <ProtectedRoute>
                 <QuizResults />
               </ProtectedRoute>
             }

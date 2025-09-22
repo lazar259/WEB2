@@ -1,0 +1,215 @@
+/* User Profile Picture Component Styles */
+
+.user-profile-picture {
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.user-profile-picture.clickable {
+  cursor: pointer;
+}
+
+.user-profile-picture.clickable:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Size variants */
+.user-profile-picture.small {
+  width: 32px;
+  height: 32px;
+  font-size: 12px;
+}
+
+.user-profile-picture.medium {
+  width: 48px;
+  height: 48px;
+  font-size: 16px;
+}
+
+.user-profile-picture.large {
+  width: 64px;
+  height: 64px;
+  font-size: 20px;
+}
+
+.user-profile-picture .profile-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.user-profile-picture .profile-initials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Skeleton loading state */
+.user-profile-picture.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+.user-profile-picture.skeleton .skeleton-content {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Zoom Modal Styles */
+.profile-zoom-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fade-in 0.3s ease;
+}
+
+.profile-zoom-container {
+  position: relative;
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: zoom-in 0.3s ease;
+}
+
+.zoom-close-button {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  z-index: 1;
+}
+
+.zoom-close-button:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.profile-image-zoomed {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.profile-zoom-info {
+  text-align: center;
+  padding-top: 16px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.profile-zoom-info h3 {
+  margin: 0 0 8px 0;
+  color: #333;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.profile-zoom-info p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+/* Animation keyframes */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes zoom-in {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .profile-zoom-container {
+    background: #2a2a2a;
+    color: white;
+  }
+
+  .profile-zoom-info h3 {
+    color: white;
+  }
+
+  .profile-zoom-info p {
+    color: #ccc;
+  }
+
+  .profile-zoom-info {
+    border-top-color: #444;
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .profile-zoom-container {
+    margin: 20px;
+    max-width: calc(100vw - 40px);
+    padding: 20px;
+  }
+
+  .profile-image-zoomed {
+    max-width: 100%;
+  }
+}

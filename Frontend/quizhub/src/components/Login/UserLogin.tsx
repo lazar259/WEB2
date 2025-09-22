@@ -72,9 +72,14 @@ const UserLogin = () => {
 
         const response = await authService.login(loginData);
         if (response.success) {
-          // Save token and redirect based on user type
+          // Save token and user data, then redirect based on user type
           if (response.token) {
             authService.saveAuthToken(response.token);
+
+            // Save user data if available
+            if (response.user) {
+              authService.saveUserData(response.user);
+            }
 
             // Get user type from token and redirect accordingly
             const userType = getUserTypeFromToken(response.token);

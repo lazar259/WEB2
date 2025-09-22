@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import UserQuizList from './UserQuizList';
+import UserProfilePicture from './UserProfilePicture';
 import './UserDashboard.css';
 
 const UserDashboard = () => {
@@ -8,6 +9,7 @@ const UserDashboard = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('authToken');
+    localStorage.removeItem('userData');
     navigate('/');
   };
 
@@ -21,8 +23,13 @@ const UserDashboard = () => {
       <header className="user-header">
         <div className="user-header-content">
           <div className="user-brand">
-            <h1>QuizHub</h1>
-            <span className="user-badge">User</span>
+            <div className="brand-with-profile">
+              <UserProfilePicture size="medium" showZoom={true} />
+              <div className="brand-content">
+                <h1>QuizHub</h1>
+                <span className="user-badge">User</span>
+              </div>
+            </div>
           </div>
           <div className="user-actions">
             <button
