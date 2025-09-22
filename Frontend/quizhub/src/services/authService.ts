@@ -138,6 +138,4 @@ class AuthService {
   }
 }
 
-// Create and export singleton instance
-const authService = new AuthService();
-export default authService;
+export default AuthService;

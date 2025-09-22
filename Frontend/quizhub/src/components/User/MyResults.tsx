@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { QuizAttemptResponse } from '../../services/types';
-import quizAttemptService from '../../services/quizAttemptService';
+import QuizAttemptService from '../../services/quizAttemptService';
 import ProgressionChart from './ProgressionChart';
 import './MyResults.css';
 
-const MyResults = () => {
+interface MyResultsProps {
+  quizAttemptService: QuizAttemptService;
+}
+
+const MyResults = ({ quizAttemptService }: MyResultsProps) => {
   const navigate = useNavigate();
   const [attempts, setAttempts] = useState<QuizAttemptResponse[]>([]);
   const [loading, setLoading] = useState(true);

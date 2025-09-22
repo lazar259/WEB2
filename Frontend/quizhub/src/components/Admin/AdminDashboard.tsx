@@ -1,8 +1,15 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import QuizService from '../../services/quizService';
+import QuizAttemptService from '../../services/quizAttemptService';
 import './AdminDashboard.css';
 
-const AdminDashboard = () => {
+interface AdminDashboardProps {
+  quizService: QuizService;
+  quizAttemptService: QuizAttemptService;
+}
+
+const AdminDashboard = ({ quizService, quizAttemptService }: AdminDashboardProps) => {
   const navigate = useNavigate();
 
   // Redirect to quiz management by default

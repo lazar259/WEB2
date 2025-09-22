@@ -1,8 +1,9 @@
 import React from 'react';
 import { QuizSummaryResponse } from '../../../services/types';
-import quizService from '../../../services/quizService';
+import QuizService from '../../../services/quizService';
 
 interface QuizListProps {
+  quizService: QuizService;
   quizzes: QuizSummaryResponse[];
   loading: boolean;
   onEdit: (quizId: number) => void;
@@ -12,6 +13,7 @@ interface QuizListProps {
 }
 
 const QuizList = ({
+  quizService,
   quizzes,
   loading,
   onEdit,

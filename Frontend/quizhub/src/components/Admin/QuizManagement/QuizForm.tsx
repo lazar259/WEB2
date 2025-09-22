@@ -9,16 +9,17 @@ import {
   UpdateQuestionRequest,
   ApiError
 } from '../../../services/types';
-import quizService from '../../../services/quizService';
+import QuizService from '../../../services/quizService';
 import QuestionEditor from './QuestionEditor';
 
 interface QuizFormProps {
+  quizService: QuizService;
   quizId?: number | null;
   onSaved: () => void;
   onCancel: () => void;
 }
 
-const QuizForm = ({ quizId, onSaved, onCancel }: QuizFormProps) => {
+const QuizForm = ({ quizService, quizId, onSaved, onCancel }: QuizFormProps) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);

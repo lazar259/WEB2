@@ -5,12 +5,17 @@ import {
   QuizAnswerResponse,
   QuestionType
 } from '../../services/types';
-import quizAttemptService from '../../services/quizAttemptService';
-import quizService from '../../services/quizService';
+import QuizService from '../../services/quizService';
+import QuizAttemptService from '../../services/quizAttemptService';
 import { getUserTypeFromToken, getAuthToken } from '../../utils/jwt';
 import './QuizResults.css';
 
-const QuizResults = () => {
+interface QuizResultsProps {
+  quizService: QuizService;
+  quizAttemptService: QuizAttemptService;
+}
+
+const QuizResults = ({ quizService, quizAttemptService }: QuizResultsProps) => {
   const navigate = useNavigate();
   const { quizId, attemptId } = useParams<{ quizId: string; attemptId: string }>();
 

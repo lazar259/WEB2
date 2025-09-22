@@ -5,12 +5,16 @@ import {
   DifficultyLevel,
   ApiError
 } from '../../../services/types';
-import quizService from '../../../services/quizService';
+import QuizService from '../../../services/quizService';
 import QuizList from './QuizList';
 import QuizForm from './QuizForm';
 import './QuizManagement.css';
 
-const QuizManagement = () => {
+interface QuizManagementProps {
+  quizService: QuizService;
+}
+
+const QuizManagement = ({ quizService }: QuizManagementProps) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -162,6 +166,7 @@ const QuizManagement = () => {
           </div>
 
           <QuizForm
+            quizService={quizService}
             quizId={selectedQuizId}
             onSaved={handleQuizSaved}
             onCancel={handleBackToList}
@@ -280,6 +285,7 @@ const QuizManagement = () => {
       )}
 
       <QuizList
+        quizService={quizService}
         quizzes={quizzes}
         loading={loading}
         onEdit={handleEditQuiz}

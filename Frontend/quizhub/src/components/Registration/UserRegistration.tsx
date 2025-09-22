@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import './UserRegistration.css';
-import authService from '../../services/authService';
+import AuthService from '../../services/authService';
 import { RegisterRequest } from '../../services/types';
 
 interface FormData {
@@ -20,7 +20,11 @@ interface FormErrors {
   profilePicture?: string;
 }
 
-const UserRegistration = () => {
+interface UserRegistrationProps {
+  authService: AuthService;
+}
+
+const UserRegistration = ({ authService }: UserRegistrationProps) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<FormData>({
     username: '',

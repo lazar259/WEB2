@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import './UserLogin.css';
-import authService from '../../services/authService';
+import AuthService from '../../services/authService';
 import { LoginRequest } from '../../services/types';
 import { getUserTypeFromToken } from '../../utils/jwt';
 
@@ -15,7 +15,11 @@ interface LoginFormErrors {
   password?: string;
 }
 
-const UserLogin = () => {
+interface UserLoginProps {
+  authService: AuthService;
+}
+
+const UserLogin = ({ authService }: UserLoginProps) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<LoginFormData>({
     username: '',

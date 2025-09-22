@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { QuizSummaryResponse, DifficultyLevel } from '../../services/types';
-import quizService from '../../services/quizService';
+import QuizService from '../../services/quizService';
 import './UserQuizList.css';
 
 interface UserQuizListProps {
+  quizService: QuizService;
   onTakeQuiz?: (quizId: number) => void;
 }
 
-const UserQuizList = ({ onTakeQuiz }: UserQuizListProps) => {
+const UserQuizList = ({ quizService, onTakeQuiz }: UserQuizListProps) => {
   const [quizzes, setQuizzes] = useState<QuizSummaryResponse[]>([]);
   const [filteredQuizzes, setFilteredQuizzes] = useState<QuizSummaryResponse[]>([]);
   const [loading, setLoading] = useState(true);

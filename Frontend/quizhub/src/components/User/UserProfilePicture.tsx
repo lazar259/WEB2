@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import userService, { UserProfile } from '../../services/userService';
+import UserService, { UserProfile } from '../../services/userService';
 import './UserProfilePicture.css';
 
 interface UserProfilePictureProps {
+  userService: UserService;
   size?: 'small' | 'medium' | 'large';
   showZoom?: boolean;
 }
 
 const UserProfilePicture: React.FC<UserProfilePictureProps> = ({
+  userService,
   size = 'medium',
   showZoom = true
 }) => {
@@ -27,7 +29,7 @@ const UserProfilePicture: React.FC<UserProfilePictureProps> = ({
     };
 
     fetchUserProfile();
-  }, []);
+  }, [userService]);
 
   const handleClick = () => {
     if (showZoom && profilePictureUrl) {

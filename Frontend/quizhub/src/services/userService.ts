@@ -1,5 +1,5 @@
 import { getUserInfoFromToken, getAuthToken } from '../utils/jwt';
-import authService from './authService';
+import AuthService from './authService';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://localhost:7287/api';
 
@@ -12,6 +12,7 @@ export interface UserProfile {
 }
 
 class UserService {
+  constructor(private authService: AuthService) {}
   private async makeAuthenticatedRequest(
     endpoint: string,
     options: RequestInit = {}
@@ -59,7 +60,7 @@ class UserService {
   async getUserProfile(userId?: number): Promise<UserProfile | null> {
     try {
       // First try to get user data from localStorage (stored during login)
-      const storedUserData = authService.getUserData();
+      const storedUserData = this.authService.getUserData();
 
       if (storedUserData) {
         // Convert UserType enum to string
@@ -105,6 +106,4 @@ class UserService {
   }
 }
 
-// Create and export singleton instance
-const userService = new UserService();
-export default userService;
+export default UserService;

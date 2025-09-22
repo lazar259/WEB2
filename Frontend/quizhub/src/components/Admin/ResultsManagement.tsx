@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { QuizSummaryResponse, QuizAttemptResponse } from '../../services/types';
-import quizService from '../../services/quizService';
-import quizAttemptService from '../../services/quizAttemptService';
+import QuizService from '../../services/quizService';
+import QuizAttemptService from '../../services/quizAttemptService';
 import './ResultsManagement.css';
 
-const ResultsManagement = () => {
+interface ResultsManagementProps {
+  quizService: QuizService;
+  quizAttemptService: QuizAttemptService;
+}
+
+const ResultsManagement = ({ quizService, quizAttemptService }: ResultsManagementProps) => {
   const navigate = useNavigate();
   const [allAttempts, setAllAttempts] = useState<QuizAttemptResponse[]>([]);
   const [filteredAttempts, setFilteredAttempts] = useState<QuizAttemptResponse[]>([]);

@@ -158,6 +158,7 @@ export interface UpdateQuizRequest {
 export interface StartQuizRequest {
   quizId: number;
   restart?: boolean;
+  checkOnly?: boolean;
 }
 
 export interface SubmitAnswerRequest {

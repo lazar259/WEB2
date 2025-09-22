@@ -13,20 +13,26 @@ import QuizResults from './components/Quiz/QuizResults';
 import MyResults from './components/User/MyResults';
 import GlobalRankings from './components/User/GlobalRankings';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
+import { AuthService, QuizService, UserService, QuizAttemptService } from './services';
 
 function App() {
+  const authService = new AuthService();
+  const quizService = new QuizService();
+  const userService = new UserService(authService);
+  const quizAttemptService = new QuizAttemptService();
+
   return (
     <Router>
       <div className="App">
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<UserLogin />} />
-          <Route path="/register" element={<UserRegistration />} />
+          <Route path="/login" element={<UserLogin authService={authService} />} />
+          <Route path="/register" element={<UserRegistration authService={authService} />} />
           <Route
             path="/admin/dashboard"
             element={
               <ProtectedRoute requiredUserType="admin">
-                <AdminDashboard />
+                <AdminDashboard quizService={quizService} quizAttemptService={quizAttemptService} />
               </ProtectedRoute>
             }
           />
@@ -34,7 +40,7 @@ function App() {
             path="/admin/quiz-management"
             element={
               <ProtectedRoute requiredUserType="admin">
-                <QuizManagement />
+                <QuizManagement quizService={quizService} />
               </ProtectedRoute>
             }
           />
@@ -42,7 +48,7 @@ function App() {
             path="/admin/results-management"
             element={
               <ProtectedRoute requiredUserType="admin">
-                <ResultsManagement />
+                <ResultsManagement quizService={quizService} quizAttemptService={quizAttemptService} />
               </ProtectedRoute>
             }
           />
@@ -50,7 +56,7 @@ function App() {
             path="/user/dashboard"
             element={
               <ProtectedRoute requiredUserType="user">
-                <UserDashboard />
+                <UserDashboard quizService={quizService} userService={userService} />
               </ProtectedRoute>
             }
           />
@@ -58,7 +64,7 @@ function App() {
             path="/quiz/:quizId/take"
             element={
               <ProtectedRoute requiredUserType="user">
-                <QuizTaking />
+                <QuizTaking quizService={quizService} quizAttemptService={quizAttemptService} />
               </ProtectedRoute>
             }
           />
@@ -66,7 +72,7 @@ function App() {
             path="/quiz/:quizId/results/:attemptId"
             element={
               <ProtectedRoute>
-                <QuizResults />
+                <QuizResults quizService={quizService} quizAttemptService={quizAttemptService} />
               </ProtectedRoute>
             }
           />
@@ -74,7 +80,7 @@ function App() {
             path="/user/my-results"
             element={
               <ProtectedRoute requiredUserType="user">
-                <MyResults />
+                <MyResults quizAttemptService={quizAttemptService} />
               </ProtectedRoute>
             }
           />
@@ -82,7 +88,7 @@ function App() {
             path="/rankings"
             element={
               <ProtectedRoute requiredUserType="user">
-                <GlobalRankings />
+                <GlobalRankings quizService={quizService} quizAttemptService={quizAttemptService} />
               </ProtectedRoute>
             }
           />

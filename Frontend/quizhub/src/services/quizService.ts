@@ -256,6 +256,4 @@ class QuizService {
   }
 }
 
-// Create and export singleton instance
-const quizService = new QuizService();
-export default quizService;
+export default QuizService;

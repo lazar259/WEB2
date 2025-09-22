@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { QuizSummaryResponse, RankingEntryResponse } from '../../services/types';
-import quizService from '../../services/quizService';
-import quizAttemptService from '../../services/quizAttemptService';
+import QuizService from '../../services/quizService';
+import QuizAttemptService from '../../services/quizAttemptService';
 import './GlobalRankings.css';
 
 type TimePeriod = 'weekly' | 'monthly' | 'yearly' | 'all';
 
-const GlobalRankings = () => {
+interface GlobalRankingsProps {
+  quizService: QuizService;
+  quizAttemptService: QuizAttemptService;
+}
+
+const GlobalRankings = ({ quizService, quizAttemptService }: GlobalRankingsProps) => {
   const navigate = useNavigate();
   const [rankings, setRankings] = useState<RankingEntryResponse[]>([]);
   const [quizzes, setQuizzes] = useState<QuizSummaryResponse[]>([]);

@@ -2,9 +2,16 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import UserQuizList from './UserQuizList';
 import UserProfilePicture from './UserProfilePicture';
+import QuizService from '../../services/quizService';
+import UserService from '../../services/userService';
 import './UserDashboard.css';
 
-const UserDashboard = () => {
+interface UserDashboardProps {
+  quizService: QuizService;
+  userService: UserService;
+}
+
+const UserDashboard = ({ quizService, userService }: UserDashboardProps) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -24,7 +31,7 @@ const UserDashboard = () => {
         <div className="user-header-content">
           <div className="user-brand">
             <div className="brand-with-profile">
-              <UserProfilePicture size="medium" showZoom={true} />
+              <UserProfilePicture userService={userService} size="medium" showZoom={true} />
               <div className="brand-content">
                 <h1>QuizHub</h1>
                 <span className="user-badge">User</span>
@@ -65,7 +72,7 @@ const UserDashboard = () => {
 
           {/* Quiz List Section */}
           <section className="quiz-section">
-            <UserQuizList onTakeQuiz={handleTakeQuiz} />
+            <UserQuizList quizService={quizService} onTakeQuiz={handleTakeQuiz} />
           </section>
 
         </div>

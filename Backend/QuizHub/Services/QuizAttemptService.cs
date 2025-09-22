@@ -69,6 +69,12 @@ namespace QuizHub.Services
                 }
             }
 
+            // If this is a check-only request and no active attempt exists, return null/error
+            if (request.CheckOnly)
+            {
+                throw new ArgumentException("No active attempt found");
+            }
+
             // Create new attempt
             var attempt = new QuizAttempt
             {

@@ -8,7 +8,8 @@ import {
   SubmitAnswerRequest,
   QuizAttemptResponse
 } from '../../services/types';
-import quizAttemptService from '../../services/quizAttemptService';
+import QuizService from '../../services/quizService';
+import QuizAttemptService from '../../services/quizAttemptService';
 import './QuizTaking.css';
 
 interface QuizAnswer {
@@ -17,7 +18,12 @@ interface QuizAnswer {
   selectedOptionIds: number[];
 }
 
-const QuizTaking = () => {
+interface QuizTakingProps {
+  quizService: QuizService;
+  quizAttemptService: QuizAttemptService;
+}
+
+const QuizTaking = ({ quizService, quizAttemptService }: QuizTakingProps) => {
   const navigate = useNavigate();
   const { quizId } = useParams<{ quizId: string }>();
 
@@ -71,8 +77,8 @@ const QuizTaking = () => {
       setLoading(true);
       setError(null);
 
-      // Try to start without restart to check for existing attempt
-      const response = await quizAttemptService.startQuiz({ quizId: quizIdNum, restart: false });
+      // Try to check for existing attempt without creating a new one
+      const response = await quizAttemptService.startQuiz({ quizId: quizIdNum, restart: false, checkOnly: true });
 
       if ('success' in response && !response.success) {
         // No existing attempt, just set loading to false so user can start
