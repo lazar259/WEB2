@@ -101,6 +101,12 @@ const ProgressionChart: React.FC<ProgressionChartProps> = ({ attempts }) => {
   // Quiz colors
   const quizColors = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4', '#f97316', '#84cc16', '#ec4899', '#6366f1'];
 
+  // Create consistent color mapping based on quiz ID
+  const getQuizColor = (quizId: number): string => {
+    const quizIndex = uniqueQuizzes.findIndex(quiz => quiz.id === quizId);
+    return quizColors[quizIndex % quizColors.length];
+  };
+
   // Group data by quiz for multiple lines
   const quizLines = useMemo((): QuizLine[] => {
     const groupedData = new Map<number, QuizLine>();
@@ -111,14 +117,14 @@ const ProgressionChart: React.FC<ProgressionChartProps> = ({ attempts }) => {
           quizId: point.quizId,
           quizTitle: point.quizTitle,
           points: [],
-          color: quizColors[groupedData.size % quizColors.length]
+          color: getQuizColor(point.quizId)
         });
       }
       groupedData.get(point.quizId)!.points.push(point);
     });
 
     return Array.from(groupedData.values());
-  }, [chartData, quizColors]);
+  }, [chartData, uniqueQuizzes]);
 
   // Chart scaling functions
   const scaleX = (attemptIndex: number, totalAttempts: number) => {
@@ -203,7 +209,7 @@ const ProgressionChart: React.FC<ProgressionChartProps> = ({ attempts }) => {
               />
               <span
                 className="quiz-checkbox-indicator"
-                style={{ backgroundColor: selectedQuizIds.has(quiz.id) ? quizColors[index % quizColors.length] : '#e5e7eb' }}
+                style={{ backgroundColor: selectedQuizIds.has(quiz.id) ? getQuizColor(quiz.id) : '#e5e7eb' }}
               ></span>
               <span className="quiz-checkbox-label">
                 {quiz.title} <span className="attempt-count">({quiz.attemptCount} attempts)</span>

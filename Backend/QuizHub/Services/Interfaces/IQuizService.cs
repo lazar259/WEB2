@@ -14,5 +14,6 @@ namespace QuizHub.Services.Interfaces
         Task<QuizResponse?> UpdateQuizAsync(int id, UpdateQuizRequest request, int updatedByUserId);
         Task<bool> DeleteQuizAsync(int id, int deletedByUserId);
         Task<bool> ToggleQuizStatusAsync(int id, int updatedByUserId);
+        Task<bool> HasAttemptsAsync(int quizId);
     }
 }

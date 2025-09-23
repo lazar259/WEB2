@@ -105,48 +105,35 @@ namespace QuizHub.Services
             if (user.UserType != UserType.Admin || quiz.CreatedByUserId != updatedByUserId)
                 throw new UnauthorizedAccessException("Only the quiz creator can update this quiz");
 
-            // Update quiz properties
-            quiz.Title = request.Title;
-            quiz.Description = request.Description;
-            quiz.Topic = request.Topic;
-            quiz.Difficulty = request.Difficulty;
-            quiz.TimeLimitInMinutes = request.TimeLimitInMinutes;
-            quiz.IsActive = request.IsActive;
-            quiz.UpdatedAt = DateTime.UtcNow;
-
-            // Calculate new total points
-            quiz.TotalPoints = request.Questions.Sum(q => q.Points);
-
-            // Remove all existing questions first to avoid tracking issues
-            var existingQuestions = quiz.Questions.ToList();
-            foreach (var existingQuestion in existingQuestions)
+            // Check if quiz has attempts - if so, limit what can be changed
+            var hasAttempts = await _quizRepository.HasAttemptsAsync(id);
+            if (hasAttempts)
             {
-                quiz.Questions.Remove(existingQuestion);
-            }
+                // Only allow basic property updates, no question changes
+                quiz.Title = request.Title;
+                quiz.Description = request.Description;
+                quiz.IsActive = request.IsActive;
+                quiz.UpdatedAt = DateTime.UtcNow;
 
-            // Add new questions
-            foreach (var requestQuestion in request.Questions)
+                await _quizRepository.UpdateAsync(quiz);
+            }
+            else
             {
-                var newQuestion = new Question
-                {
-                    QuestionText = requestQuestion.QuestionText,
-                    Type = requestQuestion.Type,
-                    Points = requestQuestion.Points,
-                    Order = requestQuestion.Order,
-                    Explanation = requestQuestion.Explanation,
-                    CorrectAnswer = requestQuestion.CorrectAnswer,
-                    QuizId = quiz.Id,
-                    Options = requestQuestion.Options.Select(o => new QuestionOption
-                    {
-                        OptionText = o.OptionText,
-                        IsCorrect = o.IsCorrect,
-                        Order = o.Order
-                    }).ToList()
-                };
-                quiz.Questions.Add(newQuestion);
-            }
+                // Full update allowed - no attempts yet
+                quiz.Title = request.Title;
+                quiz.Description = request.Description;
+                quiz.Topic = request.Topic;
+                quiz.Difficulty = request.Difficulty;
+                quiz.TimeLimitInMinutes = request.TimeLimitInMinutes;
+                quiz.IsActive = request.IsActive;
+                quiz.UpdatedAt = DateTime.UtcNow;
 
-            await _quizRepository.UpdateAsync(quiz);
+                // Calculate new total points
+                quiz.TotalPoints = request.Questions.Sum(q => q.Points);
+
+                // Use repository method to handle complex update with related entities
+                await _quizRepository.UpdateQuizWithQuestionsAsync(quiz, request.Questions);
+            }
 
             var updatedQuiz = await _quizRepository.GetByIdWithDetailsAsync(id);
             return MapToQuizResponse(updatedQuiz!);
@@ -165,6 +152,16 @@ namespace QuizHub.Services
 
             if (user.UserType != UserType.Admin || quiz.CreatedByUserId != deletedByUserId)
                 throw new UnauthorizedAccessException("Only the quiz creator can delete this quiz");
+
+            // Check if quiz has attempts - if so, deactivate instead of delete
+            var hasAttempts = await _quizRepository.HasAttemptsAsync(id);
+            if (hasAttempts)
+            {
+                quiz.IsActive = false;
+                quiz.UpdatedAt = DateTime.UtcNow;
+                await _quizRepository.UpdateAsync(quiz);
+                return true;
+            }
 
             await _quizRepository.DeleteAsync(quiz.Id);
             return true;
@@ -257,6 +254,11 @@ namespace QuizHub.Services
                     ProfilePicture = quiz.CreatedByUser.ProfilePicture
                 }
             };
+        }
+
+        public async Task<bool> HasAttemptsAsync(int quizId)
+        {
+            return await _quizRepository.HasAttemptsAsync(quizId);
         }
     }
 }

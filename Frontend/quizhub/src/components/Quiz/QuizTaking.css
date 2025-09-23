@@ -368,6 +368,11 @@
   transform: translateY(-2px);
 }
 
+.btn-sm {
+  padding: 8px 16px;
+  font-size: 13px;
+}
+
 /* Question Overview */
 .question-overview {
   background: white;

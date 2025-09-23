@@ -44,7 +44,8 @@ namespace QuizHub.Models
 
         public bool IsActive { get; set; } = true;
 
-        // Navigation property
+        // Navigation properties
         public ICollection<Question> Questions { get; set; } = new List<Question>();
+        public ICollection<QuizAttempt> QuizAttempts { get; set; } = new List<QuizAttempt>();
     }
 }

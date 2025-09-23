@@ -147,7 +147,7 @@ namespace QuizHub.Controllers
 
                 var userId = GetCurrentUserId();
                 var quiz = await _quizService.UpdateQuizAsync(id, request, userId);
-                
+
                 if (quiz == null)
                 {
                     return NotFound("Quiz not found");
@@ -158,6 +158,10 @@ namespace QuizHub.Controllers
             catch (UnauthorizedAccessException ex)
             {
                 return Forbid(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
@@ -208,6 +212,20 @@ namespace QuizHub.Controllers
             catch (UnauthorizedAccessException ex)
             {
                 return Forbid(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpGet("{id}/has-attempts")]
+        public async Task<ActionResult<bool>> HasAttempts(int id)
+        {
+            try
+            {
+                var hasAttempts = await _quizService.HasAttemptsAsync(id);
+                return Ok(hasAttempts);
             }
             catch (Exception ex)
             {

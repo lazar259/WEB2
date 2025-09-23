@@ -73,8 +73,8 @@ const QuestionEditor = ({
     const updatedOptions = [...question.options];
     updatedOptions[optionIndex] = { ...updatedOptions[optionIndex], ...updates };
 
-    // For single choice questions, ensure only one option is correct
-    if (question.type === QuestionType.SingleChoice && updates.isCorrect === true) {
+    // For single choice and true/false questions, ensure only one option is correct
+    if ((question.type === QuestionType.SingleChoice || question.type === QuestionType.TrueFalse) && updates.isCorrect === true) {
       updatedOptions.forEach((option, index) => {
         if (index !== optionIndex) {
           option.isCorrect = false;
@@ -256,7 +256,7 @@ const QuestionEditor = ({
                   <div key={optionIndex} className="option-editor">
                     <div className="option-input-group">
                       <input
-                        type={question.type === QuestionType.SingleChoice ? 'radio' : 'checkbox'}
+                        type={question.type === QuestionType.SingleChoice || question.type === QuestionType.TrueFalse ? 'radio' : 'checkbox'}
                         name={`question-${index}-correct`}
                         checked={option.isCorrect}
                         onChange={(e) => updateOption(optionIndex, { isCorrect: e.target.checked })}
@@ -292,6 +292,9 @@ const QuestionEditor = ({
               )}
               {question.type === QuestionType.MultipleChoice && (
                 <p className="help-text">Select one or more correct options.</p>
+              )}
+              {question.type === QuestionType.TrueFalse && (
+                <p className="help-text">Select whether True or False is the correct answer.</p>
               )}
             </div>
           )}

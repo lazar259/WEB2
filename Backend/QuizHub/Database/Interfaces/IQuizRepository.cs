@@ -1,3 +1,4 @@
+using QuizHub.DTOs;
 using QuizHub.Models;
 
 namespace QuizHub.Database.Interfaces
@@ -9,6 +10,8 @@ namespace QuizHub.Database.Interfaces
         Task<IEnumerable<Quiz>> GetByCreatorAsync(int createdByUserId);
         Task<IEnumerable<Quiz>> GetActiveQuizzesAsync();
         Task<IEnumerable<Quiz>> GetQuizzesByFiltersAsync(DifficultyLevel? difficulty = null, string? topic = null, bool? isActive = null);
+        Task UpdateQuizWithQuestionsAsync(Quiz quiz, IEnumerable<UpdateQuestionRequest> questions);
+        Task<bool> HasAttemptsAsync(int quizId);
         new Task<bool> ExistsAsync(int id);
     }
 }

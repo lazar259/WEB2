@@ -201,12 +201,23 @@ const QuizTaking = ({ quizService, quizAttemptService }: QuizTakingProps) => {
     }
   };
 
-  const handleCompleteQuiz = async () => {
+  const handleCompleteQuiz = async (isEarlyCompletion: boolean = false) => {
     if (!session || isSubmitting) return;
 
-    const confirmSubmit = window.confirm(
-      'Are you sure you want to submit your quiz? You cannot change your answers after submission.'
-    );
+    const answeredQuestions = Array.from(answers.entries()).filter(([questionId, answer]) => {
+      return answer.selectedOptionIds.length > 0 || answer.userAnswer?.trim();
+    }).length;
+
+    const totalQuestions = quiz?.questions.length || 0;
+    const unansweredCount = totalQuestions - answeredQuestions;
+
+    let confirmMessage = 'Are you sure you want to submit your quiz? You cannot change your answers after submission.';
+
+    if (isEarlyCompletion && unansweredCount > 0) {
+      confirmMessage = `You have ${unansweredCount} unanswered question${unansweredCount !== 1 ? 's' : ''}. Are you sure you want to complete the quiz now? Unanswered questions will be marked as incorrect.`;
+    }
+
+    const confirmSubmit = window.confirm(confirmMessage);
 
     if (!confirmSubmit) return;
 
@@ -447,7 +458,16 @@ const QuizTaking = ({ quizService, quizAttemptService }: QuizTakingProps) => {
 
           <div className="quiz-header-actions">
             <button
-              className="btn btn-cancel"
+              className="btn btn-success btn-sm"
+              onClick={() => handleCompleteQuiz(true)}
+              disabled={isSubmitting}
+              title="Complete quiz with current answers"
+            >
+              {isSubmitting ? 'Submitting...' : 'Complete Attempt'}
+            </button>
+
+            <button
+              className="btn btn-cancel btn-sm"
               onClick={handleCancelQuiz}
               title="Cancel Quiz"
             >
@@ -504,7 +524,7 @@ const QuizTaking = ({ quizService, quizAttemptService }: QuizTakingProps) => {
             ) : (
               <button
                 className="btn btn-success"
-                onClick={handleCompleteQuiz}
+                onClick={() => handleCompleteQuiz(false)}
                 disabled={isSubmitting}
               >
                 {isSubmitting ? 'Submitting...' : 'Complete Quiz'}

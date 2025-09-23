@@ -77,7 +77,7 @@ namespace QuizHub.Data
                 entity.Property(e => e.StartedAt).HasDefaultValueSql("GETUTCDATE()");
 
                 entity.HasOne(e => e.Quiz)
-                      .WithMany()
+                      .WithMany(q => q.QuizAttempts)
                       .HasForeignKey(e => e.QuizId)
                       .OnDelete(DeleteBehavior.Restrict);
 
