@@ -23,7 +23,7 @@ const UserQuizList = ({ quizService, onTakeQuiz }: UserQuizListProps) => {
 
   useEffect(() => {
     loadActiveQuizzes();
-  }, [filters.difficulty, filters.topic]);
+  }, [filters.difficulty]);
 
   useEffect(() => {
     applyFilters();
@@ -35,8 +35,8 @@ const UserQuizList = ({ quizService, onTakeQuiz }: UserQuizListProps) => {
       setError(null);
 
       let response;
-      if (filters.difficulty !== undefined || filters.topic !== undefined) {
-        response = await quizService.getQuizzesByFilters(filters.difficulty, filters.topic, true);
+      if (filters.difficulty !== undefined) {
+        response = await quizService.getQuizzesByFilters(filters.difficulty, undefined, true);
       } else {
         response = await quizService.getActiveQuizzes();
       }
@@ -57,6 +57,14 @@ const UserQuizList = ({ quizService, onTakeQuiz }: UserQuizListProps) => {
 
   const applyFilters = () => {
     let filtered = [...quizzes];
+
+    // Apply topic filter
+    if (filters.topic && filters.topic.trim()) {
+      const topicFilter = filters.topic.toLowerCase().trim();
+      filtered = filtered.filter(quiz =>
+        quiz.topic.toLowerCase().includes(topicFilter)
+      );
+    }
 
     // Apply keyword search
     if (filters.searchKeyword.trim()) {

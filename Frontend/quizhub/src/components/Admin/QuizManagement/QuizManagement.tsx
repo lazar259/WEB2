@@ -22,6 +22,7 @@ const QuizManagement = ({ quizService }: QuizManagementProps) => {
     navigate('/');
   };
   const [quizzes, setQuizzes] = useState<QuizSummaryResponse[]>([]);
+  const [filteredQuizzes, setFilteredQuizzes] = useState<QuizSummaryResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentView, setCurrentView] = useState<'list' | 'create' | 'edit'>('list');
@@ -44,8 +45,8 @@ const QuizManagement = ({ quizService }: QuizManagementProps) => {
 
       if (filters.showMyQuizzes) {
         response = await quizService.getMyQuizzes();
-      } else if (filters.difficulty !== undefined || filters.topic !== undefined || filters.isActive !== undefined) {
-        response = await quizService.getQuizzesByFilters(filters.difficulty, filters.topic, filters.isActive);
+      } else if (filters.difficulty !== undefined || filters.isActive !== undefined) {
+        response = await quizService.getQuizzesByFilters(filters.difficulty, undefined, filters.isActive);
       } else {
         response = await quizService.getAllQuizzes();
       }
@@ -66,7 +67,25 @@ const QuizManagement = ({ quizService }: QuizManagementProps) => {
 
   useEffect(() => {
     loadQuizzes();
-  }, [filters]);
+  }, [filters.difficulty, filters.isActive, filters.showMyQuizzes]);
+
+  useEffect(() => {
+    applyFilters();
+  }, [quizzes, filters]);
+
+  const applyFilters = () => {
+    let filtered = [...quizzes];
+
+    // Apply topic filter
+    if (filters.topic && filters.topic.trim()) {
+      const topicFilter = filters.topic.toLowerCase().trim();
+      filtered = filtered.filter(quiz =>
+        quiz.topic.toLowerCase().includes(topicFilter)
+      );
+    }
+
+    setFilteredQuizzes(filtered);
+  };
 
   const handleCreateQuiz = () => {
     setSelectedQuizId(null);
@@ -204,7 +223,7 @@ const QuizManagement = ({ quizService }: QuizManagementProps) => {
         <div className="header-left">
           <h2>Quiz Management</h2>
           <span className="quiz-count">
-            {quizzes.length} quiz{quizzes.length !== 1 ? 'es' : ''} found
+            {filteredQuizzes.length} of {quizzes.length} quiz{filteredQuizzes.length !== 1 ? 'es' : ''}
           </span>
         </div>
 
@@ -286,7 +305,7 @@ const QuizManagement = ({ quizService }: QuizManagementProps) => {
 
       <QuizList
         quizService={quizService}
-        quizzes={quizzes}
+        quizzes={filteredQuizzes}
         loading={loading}
         onEdit={handleEditQuiz}
         onDelete={handleDeleteQuiz}
