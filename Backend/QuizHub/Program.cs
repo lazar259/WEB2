@@ -7,7 +7,9 @@ using QuizHub.Database.Interfaces;
 using QuizHub.Database.Repositories;
 using QuizHub.Services.Interfaces;
 using QuizHub.Services;
+using QuizHub.Converters;
 using System.Text;
+using System.Text.Json;
 
 namespace QuizHub
 {
@@ -74,7 +76,16 @@ namespace QuizHub
 
             builder.Services.AddAuthorization();
 
-            builder.Services.AddControllers();
+            // Configure JSON serialization to handle DateTime as UTC with Z suffix
+            builder.Services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                    // Add custom DateTime converters to ensure proper UTC serialization
+                    options.JsonSerializerOptions.Converters.Add(new UtcDateTimeConverter());
+                    options.JsonSerializerOptions.Converters.Add(new UtcNullableDateTimeConverter());
+                    // Note: Removed JsonStringEnumConverter to keep enums as numbers for frontend compatibility
+                });
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

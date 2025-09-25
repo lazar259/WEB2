@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { QuizAttemptResponse } from '../../services/types';
+import { parseUTCDate } from '../../utils/dateUtils';
 import './ProgressionChart.css';
 
 interface ProgressionChartProps {
@@ -54,7 +55,7 @@ const ProgressionChart: React.FC<ProgressionChartProps> = ({ attempts }) => {
     // Filter completed attempts only and sort by completion date
     const completedAttempts = attempts
       .filter(attempt => attempt.completedAt && selectedQuizIds.has(attempt.quizId))
-      .sort((a, b) => new Date(a.completedAt!).getTime() - new Date(b.completedAt!).getTime());
+      .sort((a, b) => parseUTCDate(a.completedAt!).getTime() - parseUTCDate(b.completedAt!).getTime());
 
     return completedAttempts.map((attempt, index) => ({
       attemptId: attempt.id,
@@ -63,7 +64,7 @@ const ProgressionChart: React.FC<ProgressionChartProps> = ({ attempts }) => {
       points: attempt.score,
       maxPoints: attempt.maxScore,
       percentage: attempt.percentage,
-      date: new Date(attempt.completedAt!),
+      date: parseUTCDate(attempt.completedAt!),
       timeSpent: attempt.timeSpentInSeconds,
       attemptNumber: index + 1
     }));

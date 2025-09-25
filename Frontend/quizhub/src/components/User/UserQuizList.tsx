@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { QuizSummaryResponse, DifficultyLevel } from '../../services/types';
 import QuizService from '../../services/quizService';
+import { formatShortDate } from '../../utils/dateUtils';
 import './UserQuizList.css';
 
 interface UserQuizListProps {
@@ -92,13 +93,6 @@ const UserQuizList = ({ quizService, onTakeQuiz }: UserQuizListProps) => {
     });
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
 
   const getDifficultyBadgeClass = (difficulty: number) => {
     switch (difficulty) {
@@ -253,7 +247,7 @@ const UserQuizList = ({ quizService, onTakeQuiz }: UserQuizListProps) => {
               </div>
               <div className="date-info">
                 <span className="date-label">Created:</span>
-                <span className="date-value">{formatDate(quiz.createdAt)}</span>
+                <span className="date-value">{formatShortDate(quiz.createdAt)}</span>
               </div>
             </div>
 

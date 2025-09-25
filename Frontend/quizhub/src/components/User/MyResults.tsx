@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { QuizAttemptResponse } from '../../services/types';
 import QuizAttemptService from '../../services/quizAttemptService';
+import { formatDateWithTime } from '../../utils/dateUtils';
 import ProgressionChart from './ProgressionChart';
 import './MyResults.css';
 
@@ -38,15 +39,6 @@ const MyResults = ({ quizAttemptService }: MyResultsProps) => {
     }
   };
 
-  const formatDate = (dateString: string): string => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
 
   const formatTime = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
@@ -155,7 +147,7 @@ const MyResults = ({ quizAttemptService }: MyResultsProps) => {
                       </div>
                     </td>
                     <td className="attempt-date">
-                      {attempt.completedAt ? formatDate(attempt.completedAt) : 'In Progress'}
+                      {attempt.completedAt ? formatDateWithTime(attempt.completedAt) : 'In Progress'}
                     </td>
                     <td className="score">
                       <span className="score-value">

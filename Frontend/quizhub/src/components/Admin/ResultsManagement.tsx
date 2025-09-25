@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { QuizSummaryResponse, QuizAttemptResponse } from '../../services/types';
 import QuizService from '../../services/quizService';
 import QuizAttemptService from '../../services/quizAttemptService';
+import { formatDateWithTime, parseUTCDate } from '../../utils/dateUtils';
 import './ResultsManagement.css';
 
 interface ResultsManagementProps {
@@ -92,28 +93,19 @@ const ResultsManagement = ({ quizService, quizAttemptService }: ResultsManagemen
       }
 
       filtered = filtered.filter(attempt =>
-        attempt.completedAt && new Date(attempt.completedAt) >= cutoffDate
+        attempt.completedAt && parseUTCDate(attempt.completedAt) >= cutoffDate
       );
     }
 
     // Sort by completion date (most recent first)
     filtered.sort((a, b) => {
       if (!a.completedAt || !b.completedAt) return 0;
-      return new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime();
+      return parseUTCDate(b.completedAt).getTime() - parseUTCDate(a.completedAt).getTime();
     });
 
     setFilteredAttempts(filtered);
   };
 
-  const formatDate = (dateString: string): string => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
 
   const formatTime = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
@@ -285,7 +277,7 @@ const ResultsManagement = ({ quizService, quizAttemptService }: ResultsManagemen
                       <span className="quiz-title">{attempt.quizTitle}</span>
                     </td>
                     <td className="date-cell">
-                      {attempt.completedAt ? formatDate(attempt.completedAt) : 'In Progress'}
+                      {attempt.completedAt ? formatDateWithTime(attempt.completedAt) : 'In Progress'}
                     </td>
                     <td className="score-cell">
                       <span className="score-value">

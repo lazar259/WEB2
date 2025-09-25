@@ -1,6 +1,7 @@
 import React from 'react';
 import { QuizSummaryResponse } from '../../../services/types';
 import QuizService from '../../../services/quizService';
+import { formatDateWithTime } from '../../../utils/dateUtils';
 
 interface QuizListProps {
   quizService: QuizService;
@@ -21,15 +22,6 @@ const QuizList = ({
   onToggleStatus,
   onRefresh
 }: QuizListProps) => {
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
 
   const getDifficultyBadgeClass = (difficulty: number) => {
     switch (difficulty) {
@@ -142,12 +134,12 @@ const QuizList = ({
               <div className="date-info">
                 <div className="date-created">
                   <span className="date-label">Created:</span>
-                  <span className="date-value">{formatDate(quiz.createdAt)}</span>
+                  <span className="date-value">{formatDateWithTime(quiz.createdAt)}</span>
                 </div>
                 {quiz.updatedAt !== quiz.createdAt && (
                   <div className="date-updated">
                     <span className="date-label">Updated:</span>
-                    <span className="date-value">{formatDate(quiz.updatedAt)}</span>
+                    <span className="date-value">{formatDateWithTime(quiz.updatedAt)}</span>
                   </div>
                 )}
               </div>

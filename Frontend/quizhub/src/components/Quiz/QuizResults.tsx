@@ -8,6 +8,7 @@ import {
 import QuizService from '../../services/quizService';
 import QuizAttemptService from '../../services/quizAttemptService';
 import { getUserTypeFromToken, getAuthToken } from '../../utils/jwt';
+import { formatUTCDate } from '../../utils/dateUtils';
 import './QuizResults.css';
 
 interface QuizResultsProps {
@@ -208,12 +209,8 @@ const QuizResults = ({ quizService, quizAttemptService }: QuizResultsProps) => {
         <div className="results-header-content">
           <h1 className="quiz-title">{result.quizTitle}</h1>
           <p className="completion-date">
-            Completed on {new Date(result.completedAt!).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit'
+            Completed on {formatUTCDate(result.completedAt!, {
+              includeTime: true
             })}
           </p>
         </div>

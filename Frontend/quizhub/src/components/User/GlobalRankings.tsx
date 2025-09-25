@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { QuizSummaryResponse, RankingEntryResponse } from '../../services/types';
 import QuizService from '../../services/quizService';
 import QuizAttemptService from '../../services/quizAttemptService';
+import { formatShortDate } from '../../utils/dateUtils';
 import './GlobalRankings.css';
 
 type TimePeriod = 'weekly' | 'monthly' | 'yearly' | 'all';
@@ -85,13 +86,6 @@ const GlobalRankings = ({ quizService, quizAttemptService }: GlobalRankingsProps
     return `${secs}s`;
   };
 
-  const formatDate = (dateString: string): string => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
 
   const getRankBadge = (rank: number): string => {
     if (rank === 1) return '🥇';
@@ -238,7 +232,7 @@ const GlobalRankings = ({ quizService, quizAttemptService }: GlobalRankingsProps
                       {formatTime(entry.timeSpentInSeconds)}
                     </td>
                     <td className="date-cell">
-                      {formatDate(entry.completedAt)}
+                      {formatShortDate(entry.completedAt)}
                     </td>
                   </tr>
                 ))}

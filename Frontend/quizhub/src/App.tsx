@@ -13,6 +13,7 @@ import QuizResults from './components/Quiz/QuizResults';
 import MyResults from './components/User/MyResults';
 import GlobalRankings from './components/User/GlobalRankings';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
+import GuestRoute from './components/GuestRoute/GuestRoute';
 import { AuthService, QuizService, UserService, QuizAttemptService } from './services';
 
 function App() {
@@ -26,8 +27,16 @@ function App() {
       <div className="App">
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<UserLogin authService={authService} />} />
-          <Route path="/register" element={<UserRegistration authService={authService} />} />
+          <Route path="/login" element={
+            <GuestRoute>
+              <UserLogin authService={authService} />
+            </GuestRoute>
+          } />
+          <Route path="/register" element={
+            <GuestRoute>
+              <UserRegistration authService={authService} />
+            </GuestRoute>
+          } />
           <Route
             path="/admin/dashboard"
             element={
