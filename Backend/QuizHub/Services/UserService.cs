@@ -1,3 +1,4 @@
+using AutoMapper;
 using QuizHub.Database.Interfaces;
 using QuizHub.Models;
 using QuizHub.Services.Interfaces;
@@ -9,10 +10,12 @@ namespace QuizHub.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IMapper _mapper;
 
-        public UserService(IUserRepository userRepository)
+        public UserService(IUserRepository userRepository, IMapper mapper)
         {
             _userRepository = userRepository;
+            _mapper = mapper;
         }
 
         public async Task<User> RegisterAsync(RegisterRequest request)
@@ -31,15 +34,9 @@ namespace QuizHub.Services
             // Hash password using BCrypt
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
-            // Create new user
-            var user = new User
-            {
-                Username = request.Username,
-                Password = hashedPassword,
-                Email = request.Email,
-                UserType = request.UserType,
-                ProfilePicture = request.ProfilePicture
-            };
+            // Create new user using AutoMapper
+            var user = _mapper.Map<User>(request);
+            user.Password = hashedPassword;
 
             return await _userRepository.AddAsync(user);
         }

@@ -8,6 +8,7 @@ using QuizHub.Database.Repositories;
 using QuizHub.Services.Interfaces;
 using QuizHub.Services;
 using QuizHub.Converters;
+using QuizHub.Mapping;
 using System.Text;
 using System.Text.Json;
 
@@ -35,6 +36,9 @@ namespace QuizHub
             builder.Services.AddScoped<IJwtService, JwtService>();
             builder.Services.AddScoped<IQuizService, QuizService>();
             builder.Services.AddScoped<IQuizAttemptService, QuizAttemptService>();
+
+            // Configure AutoMapper
+            builder.Services.AddAutoMapper(typeof(QuizMappingProfile), typeof(UserMappingProfile), typeof(QuizAttemptMappingProfile));
 
             // Configure CORS
             builder.Services.AddCors(options =>

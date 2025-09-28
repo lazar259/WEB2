@@ -1,3 +1,4 @@
+using AutoMapper;
 using QuizHub.Database.Interfaces;
 using QuizHub.DTOs;
 using QuizHub.Models;
@@ -10,15 +11,18 @@ namespace QuizHub.Services
         private readonly IQuizAttemptRepository _attemptRepository;
         private readonly IQuizRepository _quizRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IMapper _mapper;
 
         public QuizAttemptService(
             IQuizAttemptRepository attemptRepository,
             IQuizRepository quizRepository,
-            IUserRepository userRepository)
+            IUserRepository userRepository,
+            IMapper mapper)
         {
             _attemptRepository = attemptRepository;
             _quizRepository = quizRepository;
             _userRepository = userRepository;
+            _mapper = mapper;
         }
 
         public async Task<QuizSessionResponse> StartQuizAsync(StartQuizRequest request, int userId)
@@ -64,7 +68,7 @@ namespace QuizHub.Services
                     else
                     {
                         // Return the existing active attempt
-                        return MapToQuizSessionResponse(existingAttempt);
+                        return CreateQuizSessionResponse(existingAttempt);
                     }
                 }
             }
@@ -88,7 +92,7 @@ namespace QuizHub.Services
 
             // Get the created attempt with details
             var createdAttempt = await _attemptRepository.GetByIdWithDetailsAsync(attempt.Id);
-            return MapToQuizSessionResponse(createdAttempt!);
+            return CreateQuizSessionResponse(createdAttempt!);
         }
 
         public async Task<QuizAttemptResponse> SubmitAnswerAsync(int attemptId, SubmitAnswerRequest request, int userId)
@@ -143,7 +147,7 @@ namespace QuizHub.Services
             }
 
             await _attemptRepository.UpdateAsync(attempt);
-            return MapToQuizAttemptResponse(attempt);
+            return _mapper.Map<QuizAttemptResponse>(attempt);
         }
 
         public async Task<QuizAttemptResponse> CompleteQuizAsync(int attemptId, int userId)
@@ -156,7 +160,7 @@ namespace QuizHub.Services
                 throw new UnauthorizedAccessException("Not authorized to complete this attempt");
 
             if (attempt.IsCompleted)
-                return MapToQuizAttemptResponse(attempt);
+                return _mapper.Map<QuizAttemptResponse>(attempt);
 
             // Calculate final score and completion
             attempt.IsCompleted = true;
@@ -166,7 +170,7 @@ namespace QuizHub.Services
             attempt.Percentage = attempt.MaxScore > 0 ? (double)attempt.Score / attempt.MaxScore * 100 : 0;
 
             await _attemptRepository.UpdateAsync(attempt);
-            return MapToQuizAttemptResponse(attempt);
+            return _mapper.Map<QuizAttemptResponse>(attempt);
         }
 
         public async Task<QuizSessionResponse?> GetActiveSessionAsync(int attemptId, int userId)
@@ -178,13 +182,13 @@ namespace QuizHub.Services
             if (attempt.IsCompleted)
                 return null;
 
-            return MapToQuizSessionResponse(attempt);
+            return CreateQuizSessionResponse(attempt);
         }
 
         public async Task<IEnumerable<QuizAttemptResponse>> GetUserAttemptsAsync(int userId)
         {
             var attempts = await _attemptRepository.GetByUserIdAsync(userId);
-            return attempts.Select(MapToQuizAttemptResponse);
+            return _mapper.Map<IEnumerable<QuizAttemptResponse>>(attempts);
         }
 
         public async Task<QuizAttemptResponse?> GetAttemptResultsAsync(int attemptId, int userId)
@@ -193,7 +197,7 @@ namespace QuizHub.Services
             if (attempt == null || attempt.UserId != userId)
                 return null;
 
-            return MapToQuizAttemptResponse(attempt);
+            return _mapper.Map<QuizAttemptResponse>(attempt);
         }
 
         private void EvaluateAnswer(QuizAnswer answer, Question question)
@@ -233,101 +237,18 @@ namespace QuizHub.Services
             answer.PointsEarned = isCorrect ? question.Points : 0;
         }
 
-        private static QuizSessionResponse MapToQuizSessionResponse(QuizAttempt attempt)
+        private QuizSessionResponse CreateQuizSessionResponse(QuizAttempt attempt)
         {
             var timeElapsed = (DateTime.UtcNow - attempt.StartedAt).TotalSeconds;
             var timeLimit = attempt.Quiz.TimeLimitInMinutes * 60;
             var timeRemaining = Math.Max(0, timeLimit - timeElapsed);
 
-            return new QuizSessionResponse
-            {
-                AttemptId = attempt.Id,
-                Quiz = MapToQuizResponse(attempt.Quiz),
-                StartedAt = attempt.StartedAt,
-                TimeRemainingInSeconds = (int)timeRemaining,
-                CurrentAnswers = attempt.Answers.Select(a => new QuizAnswerResponse
-                {
-                    QuestionId = a.QuestionId,
-                    QuestionText = a.Question?.QuestionText ?? "",
-                    UserAnswer = a.UserAnswer,
-                    SelectedOptionIds = a.SelectedOptionIds.ToList(),
-                    IsCorrect = a.IsCorrect,
-                    PointsEarned = a.PointsEarned,
-                    AnsweredAt = a.AnsweredAt
-                }).ToList()
-            };
+            var response = _mapper.Map<QuizSessionResponse>(attempt);
+            response.TimeRemainingInSeconds = (int)timeRemaining;
+
+            return response;
         }
 
-        private static QuizAttemptResponse MapToQuizAttemptResponse(QuizAttempt attempt)
-        {
-            return new QuizAttemptResponse
-            {
-                Id = attempt.Id,
-                UserId = attempt.UserId,
-                UserName = attempt.User?.Username ?? "Unknown User",
-                QuizId = attempt.QuizId,
-                QuizTitle = attempt.Quiz.Title,
-                StartedAt = attempt.StartedAt,
-                CompletedAt = attempt.CompletedAt,
-                Score = attempt.Score,
-                MaxScore = attempt.MaxScore,
-                Percentage = attempt.Percentage,
-                IsCompleted = attempt.IsCompleted,
-                TimeSpentInSeconds = attempt.TimeSpentInSeconds,
-                Answers = attempt.Answers.Select(a => new QuizAnswerResponse
-                {
-                    QuestionId = a.QuestionId,
-                    QuestionText = a.Question?.QuestionText ?? "",
-                    UserAnswer = a.UserAnswer,
-                    SelectedOptionIds = a.SelectedOptionIds.ToList(),
-                    IsCorrect = a.IsCorrect,
-                    PointsEarned = a.PointsEarned,
-                    AnsweredAt = a.AnsweredAt
-                }).ToList()
-            };
-        }
-
-        private static QuizResponse MapToQuizResponse(Quiz quiz)
-        {
-            return new QuizResponse
-            {
-                Id = quiz.Id,
-                Title = quiz.Title,
-                Description = quiz.Description,
-                Topic = quiz.Topic,
-                Difficulty = quiz.Difficulty,
-                TimeLimitInMinutes = quiz.TimeLimitInMinutes,
-                TotalPoints = quiz.TotalPoints,
-                CreatedAt = quiz.CreatedAt,
-                UpdatedAt = quiz.UpdatedAt,
-                IsActive = quiz.IsActive,
-                CreatedByUser = new UserInfo
-                {
-                    Id = quiz.CreatedByUser.Id,
-                    Username = quiz.CreatedByUser.Username,
-                    Email = quiz.CreatedByUser.Email,
-                    UserType = quiz.CreatedByUser.UserType,
-                    ProfilePicture = quiz.CreatedByUser.ProfilePicture
-                },
-                Questions = quiz.Questions.Select(q => new QuestionResponse
-                {
-                    Id = q.Id,
-                    QuestionText = q.QuestionText,
-                    Type = q.Type,
-                    Points = q.Points,
-                    Order = q.Order,
-                    Explanation = q.Explanation,
-                    CorrectAnswer = q.CorrectAnswer,
-                    Options = q.Options.Select(o => new QuestionOptionResponse
-                    {
-                        Id = o.Id,
-                        OptionText = o.OptionText,
-                        IsCorrect = o.IsCorrect,
-                        Order = o.Order
-                    }).ToList()
-                }).ToList()
-            };
-        }
 
         public async Task<IEnumerable<RankingEntryResponse>> GetGlobalRankingsAsync(int? quizId, string? timePeriod)
         {
@@ -351,22 +272,11 @@ namespace QuizHub.Services
             }
 
             // Convert to ranking entries and sort
-            var rankings = attempts.Select(a => new RankingEntryResponse
-            {
-                Id = a.Id,
-                UserId = a.UserId,
-                UserName = a.User?.Username ?? "Unknown User",
-                QuizId = a.QuizId,
-                QuizTitle = a.Quiz?.Title ?? "Unknown Quiz",
-                Score = a.Score,
-                MaxScore = a.MaxScore,
-                Percentage = a.MaxScore > 0 ? Math.Round((decimal)a.Score / a.MaxScore * 100, 1) : 0,
-                TimeSpentInSeconds = a.TimeSpentInSeconds,
-                CompletedAt = a.CompletedAt ?? DateTime.MinValue
-            })
-            .OrderByDescending(r => r.Score)
-            .ThenBy(r => r.TimeSpentInSeconds)
-            .ToList();
+            var rankingEntries = _mapper.Map<IEnumerable<RankingEntryResponse>>(attempts);
+            var rankings = rankingEntries
+                .OrderByDescending(r => r.Score)
+                .ThenBy(r => r.TimeSpentInSeconds)
+                .ToList();
 
             return rankings;
         }
@@ -388,9 +298,8 @@ namespace QuizHub.Services
         public async Task<IEnumerable<QuizAttemptResponse>> GetAllAttemptsAsync()
         {
             var attempts = await _attemptRepository.GetAllAsync();
-            return attempts
-                .Where(a => a.IsCompleted) // Only return completed attempts
-                .Select(MapToQuizAttemptResponse);
+            var completedAttempts = attempts.Where(a => a.IsCompleted);
+            return _mapper.Map<IEnumerable<QuizAttemptResponse>>(completedAttempts);
         }
 
         public async Task<QuizAttemptResponse?> GetAttemptResultsByIdAsync(int attemptId)
@@ -400,7 +309,7 @@ namespace QuizHub.Services
             if (attempt == null)
                 return null;
 
-            return MapToQuizAttemptResponse(attempt);
+            return _mapper.Map<QuizAttemptResponse>(attempt);
         }
 
         private DateTime? GetTimePeriodCutoff(string timePeriod)

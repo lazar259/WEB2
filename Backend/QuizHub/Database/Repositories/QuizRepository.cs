@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using QuizHub.Data;
 using QuizHub.Database.Interfaces;
@@ -8,8 +9,11 @@ namespace QuizHub.Database.Repositories
 {
     public class QuizRepository : Repository<Quiz>, IQuizRepository
     {
-        public QuizRepository(QuizHubContext context) : base(context)
+        private readonly IMapper _mapper;
+
+        public QuizRepository(QuizHubContext context, IMapper mapper) : base(context)
         {
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<Quiz>> GetAllWithDetailsAsync()
@@ -35,6 +39,7 @@ namespace QuizHub.Database.Repositories
         {
             return await _context.Quizzes
                 .Include(q => q.CreatedByUser)
+                .Include(q => q.Questions)
                 .Where(q => q.CreatedByUserId == createdByUserId)
                 .OrderByDescending(q => q.CreatedAt)
                 .ToListAsync();
@@ -44,6 +49,7 @@ namespace QuizHub.Database.Repositories
         {
             return await _context.Quizzes
                 .Include(q => q.CreatedByUser)
+                .Include(q => q.Questions)
                 .Where(q => q.IsActive)
                 .OrderByDescending(q => q.CreatedAt)
                 .ToListAsync();
@@ -112,22 +118,8 @@ namespace QuizHub.Database.Repositories
                 // Add new questions
                 foreach (var questionRequest in questionRequests)
                 {
-                    var newQuestion = new Question
-                    {
-                        QuestionText = questionRequest.QuestionText,
-                        Type = questionRequest.Type,
-                        Points = questionRequest.Points,
-                        Order = questionRequest.Order,
-                        Explanation = questionRequest.Explanation,
-                        CorrectAnswer = questionRequest.CorrectAnswer,
-                        QuizId = quiz.Id,
-                        Options = questionRequest.Options.Select(o => new QuestionOption
-                        {
-                            OptionText = o.OptionText,
-                            IsCorrect = o.IsCorrect,
-                            Order = o.Order
-                        }).ToList()
-                    };
+                    var newQuestion = _mapper.Map<Question>(questionRequest);
+                    newQuestion.QuizId = quiz.Id;
                     _context.Questions.Add(newQuestion);
                 }
 

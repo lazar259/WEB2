@@ -1,3 +1,4 @@
+using AutoMapper;
 using QuizHub.Database.Interfaces;
 using QuizHub.DTOs;
 using QuizHub.Models;
@@ -9,11 +10,13 @@ namespace QuizHub.Services
     {
         private readonly IQuizRepository _quizRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IMapper _mapper;
 
-        public QuizService(IQuizRepository quizRepository, IUserRepository userRepository)
+        public QuizService(IQuizRepository quizRepository, IUserRepository userRepository, IMapper mapper)
         {
             _quizRepository = quizRepository;
             _userRepository = userRepository;
+            _mapper = mapper;
         }
 
         public async Task<QuizResponse> CreateQuizAsync(CreateQuizRequest request, int createdByUserId)
@@ -29,66 +32,44 @@ namespace QuizHub.Services
             // Calculate total points
             var totalPoints = request.Questions.Sum(q => q.Points);
 
-            var quiz = new Quiz
-            {
-                Title = request.Title,
-                Description = request.Description,
-                Topic = request.Topic,
-                CreatedByUserId = createdByUserId,
-                Difficulty = request.Difficulty,
-                TimeLimitInMinutes = request.TimeLimitInMinutes,
-                TotalPoints = totalPoints,
-                Questions = request.Questions.Select(q => new Question
-                {
-                    QuestionText = q.QuestionText,
-                    Type = q.Type,
-                    Points = q.Points,
-                    Order = q.Order,
-                    Explanation = q.Explanation,
-                    CorrectAnswer = q.CorrectAnswer,
-                    Options = q.Options.Select(o => new QuestionOption
-                    {
-                        OptionText = o.OptionText,
-                        IsCorrect = o.IsCorrect,
-                        Order = o.Order
-                    }).ToList()
-                }).ToList()
-            };
+            var quiz = _mapper.Map<Quiz>(request);
+            quiz.CreatedByUserId = createdByUserId;
+            quiz.TotalPoints = totalPoints;
 
             await _quizRepository.AddAsync(quiz);
 
             var createdQuiz = await _quizRepository.GetByIdWithDetailsAsync(quiz.Id);
-            return MapToQuizResponse(createdQuiz!);
+            return _mapper.Map<QuizResponse>(createdQuiz!);
         }
 
         public async Task<QuizResponse?> GetQuizByIdAsync(int id)
         {
             var quiz = await _quizRepository.GetByIdWithDetailsAsync(id);
-            return quiz != null ? MapToQuizResponse(quiz) : null;
+            return quiz != null ? _mapper.Map<QuizResponse>(quiz) : null;
         }
 
         public async Task<IEnumerable<QuizSummaryResponse>> GetAllQuizzesAsync()
         {
             var quizzes = await _quizRepository.GetAllWithDetailsAsync();
-            return quizzes.Select(MapToQuizSummaryResponse);
+            return _mapper.Map<IEnumerable<QuizSummaryResponse>>(quizzes);
         }
 
         public async Task<IEnumerable<QuizSummaryResponse>> GetQuizzesByCreatorAsync(int createdByUserId)
         {
             var quizzes = await _quizRepository.GetByCreatorAsync(createdByUserId);
-            return quizzes.Select(MapToQuizSummaryResponse);
+            return _mapper.Map<IEnumerable<QuizSummaryResponse>>(quizzes);
         }
 
         public async Task<IEnumerable<QuizSummaryResponse>> GetActiveQuizzesAsync()
         {
             var quizzes = await _quizRepository.GetActiveQuizzesAsync();
-            return quizzes.Select(MapToQuizSummaryResponse);
+            return _mapper.Map<IEnumerable<QuizSummaryResponse>>(quizzes);
         }
 
         public async Task<IEnumerable<QuizSummaryResponse>> GetQuizzesByFiltersAsync(DifficultyLevel? difficulty = null, string? topic = null, bool? isActive = null)
         {
             var quizzes = await _quizRepository.GetQuizzesByFiltersAsync(difficulty, topic, isActive);
-            return quizzes.Select(MapToQuizSummaryResponse);
+            return _mapper.Map<IEnumerable<QuizSummaryResponse>>(quizzes);
         }
 
         public async Task<QuizResponse?> UpdateQuizAsync(int id, UpdateQuizRequest request, int updatedByUserId)
@@ -136,7 +117,7 @@ namespace QuizHub.Services
             }
 
             var updatedQuiz = await _quizRepository.GetByIdWithDetailsAsync(id);
-            return MapToQuizResponse(updatedQuiz!);
+            return _mapper.Map<QuizResponse>(updatedQuiz!);
         }
 
         public async Task<bool> DeleteQuizAsync(int id, int deletedByUserId)
@@ -188,73 +169,6 @@ namespace QuizHub.Services
             return true;
         }
 
-        private static QuizResponse MapToQuizResponse(Quiz quiz)
-        {
-            return new QuizResponse
-            {
-                Id = quiz.Id,
-                Title = quiz.Title,
-                Description = quiz.Description,
-                Topic = quiz.Topic,
-                Difficulty = quiz.Difficulty,
-                TimeLimitInMinutes = quiz.TimeLimitInMinutes,
-                TotalPoints = quiz.TotalPoints,
-                CreatedAt = quiz.CreatedAt,
-                UpdatedAt = quiz.UpdatedAt,
-                IsActive = quiz.IsActive,
-                CreatedByUser = new UserInfo
-                {
-                    Id = quiz.CreatedByUser.Id,
-                    Username = quiz.CreatedByUser.Username,
-                    Email = quiz.CreatedByUser.Email,
-                    UserType = quiz.CreatedByUser.UserType,
-                    ProfilePicture = quiz.CreatedByUser.ProfilePicture
-                },
-                Questions = quiz.Questions.Select(q => new QuestionResponse
-                {
-                    Id = q.Id,
-                    QuestionText = q.QuestionText,
-                    Type = q.Type,
-                    Points = q.Points,
-                    Order = q.Order,
-                    Explanation = q.Explanation,
-                    CorrectAnswer = q.CorrectAnswer,
-                    Options = q.Options.Select(o => new QuestionOptionResponse
-                    {
-                        Id = o.Id,
-                        OptionText = o.OptionText,
-                        IsCorrect = o.IsCorrect,
-                        Order = o.Order
-                    }).ToList()
-                }).ToList()
-            };
-        }
-
-        private static QuizSummaryResponse MapToQuizSummaryResponse(Quiz quiz)
-        {
-            return new QuizSummaryResponse
-            {
-                Id = quiz.Id,
-                Title = quiz.Title,
-                Description = quiz.Description,
-                Topic = quiz.Topic,
-                Difficulty = quiz.Difficulty,
-                TimeLimitInMinutes = quiz.TimeLimitInMinutes,
-                TotalPoints = quiz.TotalPoints,
-                QuestionCount = quiz.Questions.Count,
-                CreatedAt = quiz.CreatedAt,
-                UpdatedAt = quiz.UpdatedAt,
-                IsActive = quiz.IsActive,
-                CreatedByUser = new UserInfo
-                {
-                    Id = quiz.CreatedByUser.Id,
-                    Username = quiz.CreatedByUser.Username,
-                    Email = quiz.CreatedByUser.Email,
-                    UserType = quiz.CreatedByUser.UserType,
-                    ProfilePicture = quiz.CreatedByUser.ProfilePicture
-                }
-            };
-        }
 
         public async Task<bool> HasAttemptsAsync(int quizId)
         {
